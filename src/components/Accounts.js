@@ -56,7 +56,7 @@ function Account({ nameTag, owner, address, balance }) {
         </IconButton>
       </Box>
       <Box my={1}>
-        Account's address: {address}
+        L2 Address: {address}
         <IconButton
           sx={{ color: "#FFF", fontSize: "15px" }}
           onClick={() => navigator.clipboard.writeText(owner)}
