@@ -14,7 +14,8 @@ module.exports = function override(config, env) {
     assert: require.resolve("assert"),
     crypto: require.resolve("crypto-browserify"),
     zlib: require.resolve("browserify-zlib"),
-    buffer: require.resolve("buffer") 
+    buffer: require.resolve("buffer"),
+    os: require.resolve("os-browserify/browser"),
   };
   config.plugins = (config.plugins || []).concat([
     new webpack.ProvidePlugin({
