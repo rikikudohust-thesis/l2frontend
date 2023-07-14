@@ -4,6 +4,7 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import CreateTransactionModal from "../components/modal/CreateTransactionModal";
 import { useState } from "react";
 
+
 function Dashboard() {
   const [openModal, setOpenModal] = useState(false);
   const handleNewTx = () => {

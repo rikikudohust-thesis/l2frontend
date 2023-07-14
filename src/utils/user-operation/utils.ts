@@ -18,6 +18,11 @@ import { BytesLike, arrayify, hexConcat, keccak256 } from "ethers/lib/utils";
 import { expect } from "chai";
 import { UserOperation } from "./UserOperation";
 import * as dotenv from "dotenv";
+// import * as hermez from "../hermezjs"
+import * as HDKey from "hdkey";
+import * as circomlib from "circomlib";
+// import { HermezWallet } from "../hermezjs/src/hermez-wallet";
+
 dotenv.config();
 
 export const goerliProvider = new ethers.providers.JsonRpcProvider(
@@ -153,4 +158,18 @@ export function userOpsWithoutAgg(userOps: UserOperation[]) {
       signature: "0x",
     },
   ];
+}
+
+export function generatePublicAndPrivateKeyStringFromMnemonic(mnemonic) {
+  const hdkey = HDKey.fromMasterSeed(mnemonic);
+  const privateKey = hdkey.privateKey;
+  const wallet = new hermez.
+  const publicKey = circomlib.eddsa.prv2pub(privateKey);
+
+  const publicKeyCompress = circomlib.babyJub.packPoint(publicKey);
+  const privateKeyString = privateKey.toString("hex");
+  return {
+    publicKeyString: publicKeyString,
+    privateKeyString: privateKeyString,
+  };
 }
