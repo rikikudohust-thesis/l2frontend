@@ -3,6 +3,7 @@ const base64url = require("base64url");
 import { Scalar, utils } from "ffjavascript";
 import { ethers } from "ethers";
 import { fix2Float } from "./float40";
+const HDKey = require("hdkey");
 
 const HERMEZ_COMPRESSES_AMOUNT_TYPE = "HermezCompressedAmount";
 
@@ -39,9 +40,6 @@ export function getAccount(privateKey, ethAddr) {
   const publicKeyCompressed = compressedPublicKey.toString();
   const publicKeyCompressedHex = ethers.utils.hexZeroPad(`0x${compressedPublicKey.toString(16)}`, 32).slice(2);
   //   const publicKeyBase64 = hexToBase64BJJ(publicKeyCompressedHex);
-  console.log(publicKeyCompressed);
-  console.log(publicKeyCompressedHex);
-  console.log(ethAddr);
 
   return {
     privateKey,
@@ -116,4 +114,13 @@ export function signTransaction(transaction, encodedTransaction, prv) {
 // Compress Amount
 function isHermezCompressedAmount(instance) {
   return instance.type === HERMEZ_COMPRESSES_AMOUNT_TYPE && instance instanceof HermezCompressedAmount;
+}
+
+
+export function generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, ethereum) {
+  console.log(mnemonic)
+  const hdkey = HDKey.fromMasterSeed(mnemonic);
+  const privateKey = hdkey.privateKey;
+  const eddsaAccount = getAccount(privateKey, ethereum)
+  return eddsaAccount
 }
