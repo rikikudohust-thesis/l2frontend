@@ -81,7 +81,7 @@ function Sidebar() {
             color: "#FFF",
           }}
         >
-          ChainGuard
+          ZKPayment
         </Box>
 
         <List>
