@@ -1,15 +1,52 @@
 import { eddsa, babyJub, poseidon } from "circomlib";
 const base64url = require("base64url");
 import { Scalar, utils } from "ffjavascript";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { fix2Float } from "./float40";
+import { tokenMap } from "./constant";
+import ERC20ABI from "../common/abis/erc20.json";
+import { addresses, rpcProviders } from "../common/globalCfg";
 const HDKey = require("hdkey");
 
 const HERMEZ_COMPRESSES_AMOUNT_TYPE = "HermezCompressedAmount";
 
+const MockData = {
+  ETH: {
+    name: "ETH",
+    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    decimals: 18,
+    id: 0,
+    balance: 0,
+    isApprove: true,
+  },
+  USDC: {
+    name: "USDC",
+    address: "0x1bc8779f8bC1764Eaf7105fD51597225A410cEB3",
+    decimals: 18,
+    id: 1,
+    balance: 0,
+    isApprove: false,
+  },
+  USDT: {
+    name: "USDT",
+    address: "0x4421Fb4287CCB09433666AA96dF8B94d45B108A4",
+    decimals: 18,
+    id: 2,
+    balance: 0,
+    isApprove: false,
+  },
+  WBTC: {
+    name: "WBTC",
+    address: "0x5f7e872767Db9086E143e9503424878d874fccBb",
+    decimals: 18,
+    id: 3,
+    balance: 0,
+    isApprove: false,
+  },
+};
 export function test() {
   // console.log(Scalar);
-  const amount = ethers.utils.parseUnits("100", 18).toString()
+  const amount = ethers.utils.parseUnits("100", 18).toString();
   const prv = "0000000000000000000000000000000000000000000000000000000000000001";
   const privateKey = Buffer(prv, "hex");
   const account = getAccount(privateKey, "1231212312");
@@ -19,12 +56,11 @@ export function test() {
     toAccountIndex: 35,
     tokenId: 1,
     nonce: 0,
-    amount: amount
+    amount: amount,
   };
   const data = signTransaction(tx, tx, account.privateKey);
-  console.log(data)
+  console.log(data);
 }
-
 
 export function getAccount(privateKey, ethAddr) {
   if (privateKey.length !== 32) {
@@ -50,12 +86,12 @@ export function getAccount(privateKey, ethAddr) {
 }
 
 function buildElement1(tx) {
-//   console.log(Scalar.e(0));
+  //   console.log(Scalar.e(0));
   let res = Scalar.e(0);
 
   res = Scalar.add(res, Scalar.fromString(tx.toEthereumAddress || "0", 16)); // ethAddr --> 160 bits
-//   console.log("Here")
-  console.log(Scalar.shl)
+  //   console.log("Here")
+  console.log(Scalar.shl);
   res = Scalar.add(res, Scalar.shl(fix2Float(tx.amount), 160)); // amountF --> 40 bits
   res = Scalar.add(res, Scalar.shl(tx.maxNumBatch || 0, 200)); // maxNumBatch --> 32 bits
 
@@ -116,11 +152,53 @@ function isHermezCompressedAmount(instance) {
   return instance.type === HERMEZ_COMPRESSES_AMOUNT_TYPE && instance instanceof HermezCompressedAmount;
 }
 
-
 export function generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, ethereum) {
-  console.log(mnemonic)
   const hdkey = HDKey.fromMasterSeed(mnemonic);
   const privateKey = hdkey.privateKey;
-  const eddsaAccount = getAccount(privateKey, ethereum)
-  return eddsaAccount
+  const eddsaAccount = getAccount(privateKey, ethereum);
+  return eddsaAccount;
 }
+
+export async function getERC20Balance(userAddress, tokens) {
+  const provider = rpcProviders.arbitrum;
+  let balances = {};
+  for (let i = 0; i < tokens.length; i++) {
+    const erc20 = new ethers.Contract(tokenMap[tokens[i]].address, ERC20ABI, provider);
+    const balance = await erc20.balanceOf(userAddress);
+    balances[tokens[i]] = {
+      token: tokens[i],
+      balance: balance,
+      id: tokenMap[tokens[i]].id,
+      decimals: tokenMap[tokens[i]].decimals,
+    };
+  }
+
+  return balances;
+}
+
+export async function getOnChainData(userAddress, tokens) {
+  let onchainData = MockData;
+  if (userAddress == null) {
+    return onchainData;
+  }
+  const provider = rpcProviders.arbitrum;
+  for (let i = 0; i < tokens.length; i++) {
+    const erc20 = new ethers.Contract(tokenMap[tokens[i]].address, ERC20ABI, provider);
+    const balance = await erc20.balanceOf(userAddress);
+    const allowed = await erc20.allowance(userAddress, addresses.arbitrum.zkpaymentAddress);
+    let isApprove = false;
+    if (BigNumber.from(allowed).gt(0)) {
+      isApprove = true;
+    }
+    // onchainData[tokens[i]] = {
+    //   token: tokens[i],
+    //   balance: balance,
+    //   id: tokenMap[tokens[i]].id,
+    //   decimals: tokenMap[tokens[i]].decimals,
+    //   isApprove: isApprove,
+    // };
+    (onchainData[tokens[i]].balance = balance), (onchainData[tokens[i]].isApprove = isApprove);
+  }
+  return onchainData;
+}
+

@@ -4,47 +4,101 @@ import LocalGasStationRoundedIcon from "@mui/icons-material/LocalGasStationRound
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState, useContext, useEffect } from "react";
 import * as React from "react";
-import { MetamaskContext } from "src/Router";
+import { AccountContext, MetamaskContext } from "src/Router";
+import { generatePublicAndPrivateKeyStringFromMnemonic } from "src/utils/wallet";
+
+import { useNavigate } from "react-router-dom";
 
 function UserLayout({ childComponent }) {
   const networks = ["Goerli", "Sepolia"];
+  const navigate = useNavigate();
   const [network, setNetwork] = useState(networks[0]);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [btnName, setBtnName] = useState(localStorage.getItem("Connect") !== null ? "Connected" : "CONNECT");
+  const [btnName, setBtnName] = useState("CONNECT");
   const { metamask, setMetamask } = useContext(MetamaskContext);
+  const { mnemonic } = useContext(AccountContext);
 
+  // const [account, setaccount] = useState('0x0');
   useEffect(() => {
-    window.ethereum.on("accountsChanged", handleAccountsList);
+    if (!window.ethereum) {
+      // Nothing to do here... no ethereum provider found
+      return;
+    }
+    const accountWasChanged = (accounts) => {
+      const account = generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, accounts[0]);
+      setMetamask(account);
+      setBtnName(account.ethAddr)
+      console.log("accountWasChanged");
+    };
+    const getAndSetAccount = async () => {
+      const changedAccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      const account = generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, changedAccounts[0]);
+      setMetamask(account);
+      setBtnName(account.ethAddr)
+      console.log("getAndSetAccount");
+    };
+    const clearAccount = () => {
+      setMetamask({});
+      console.log("clearAccount");
+    };
+    window.ethereum.on("accountsChanged", accountWasChanged);
+    window.ethereum.on("connect", getAndSetAccount);
+    window.ethereum.on("disconnect", clearAccount);
+    window.ethereum.request({ method: "eth_requestAccounts" }).then(
+      (accounts) => {
+        console.log("accounts", accounts);
+        // No need to set account here, it will be set by the event listener
+      },
+      (error) => {
+        // Handle any UI for errors here, e.g. network error, rejected request, etc.
+        // Set state as needed
+      }
+    );
+    return () => {
+      // Return function of a non-async useEffect will clean up on component leaving screen, or from re-reneder to due dependency change
+      window.ethereum.removeListener("accountsChanged", accountWasChanged);
+      window.ethereum.removeListener("connect", getAndSetAccount);
+      window.ethereum.removeListener("disconnect", clearAccount);
+    };
   }, []);
 
-  const handleAccountsList = (addressList) => {
-    if (addressList.length === 0) return handleDisconnectWallet();
-    else return handleConnectWallet();
-  };
+  // useEffect(() => {
+  //   window.ethereum.on("accountsChanged", handleAccountsList);
+  // }, []);
+
+  // const handleAccountsList = (addressList) => {
+  //   if (addressList.length === 0) return handleDisconnectWallet();
+  //   else return handleConnectWallet();
+  // };
   const handleAction = () => {
-    if (metamask != undefined && metamask != null) {
-      console.log("disconnect")
+    if (
+      metamask != null
+      // localStorage.getItem("Connect") != undefined
+    ) {
+      console.log("Disconnect");
       return handleDisconnectWallet();
     } else {
-      console.log("connect")
+      console.log("Connect");
       return handleConnectWallet();
     }
   };
 
-  function handleConnectWallet() {
+  async function handleConnectWallet() {
     if (window.ethereum) {
-      window.ethereum.request({ method: "eth_requestAccounts" }).then((res) => {
-        setMetamask(res[0]);
-        localStorage.setItem("Connect", "metamask");
-        setBtnName(res[0]);
-      });
+      const res = await window.ethereum.request({ method: "eth_requestAccounts" });
+
+      const account = generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, res[0]);
+      setMetamask(account);
+      setBtnName(account.ethAddr);
+      navigate("/dashboard");
     }
   }
 
-  function handleDisconnectWallet() {
+  async function handleDisconnectWallet() {
     setBtnName("CONNECT");
     setMetamask(null);
-    localStorage.removeItem("Connect");
+    // localStorage.removeItem("Connect");
+    navigate("/portfolio");
   }
 
   function truncateString(str, num) {
@@ -142,7 +196,7 @@ function UserLayout({ childComponent }) {
             }}
             onClick={handleAction}
           >
-            {btnName != "CONNECT" ? truncateString(btnName, 15) : btnName}
+            {metamask ? truncateString(btnName, 15) : "CONNECT"}
           </Button>
         </Box>
       </Box>

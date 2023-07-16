@@ -1,16 +1,9 @@
-import {
-  Box,
-  Button,
-  Input,
-  InputAdornment,
-  Paper,
-  Collapse,
-} from "@mui/material";
+import { Box, Button, Input, InputAdornment, Paper, Collapse } from "@mui/material";
 import _sodium from "libsodium-wrappers";
 import { pbkdf2Sync } from "pbkdf2";
 import { useState, useContext, createContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AccountContext } from "../Router";
+import { AccountContext, MetamaskContext } from "../Router";
 import CreateWallet from "../components/CreateWallet";
 
 export const CreateWalletContext = createContext(null);
@@ -20,27 +13,26 @@ function GettingStarted() {
   const [currentStep, setCurrentStep] = useState(0);
   const [loginPassword, setLoginPassword] = useState("");
   const { setMnemonic } = useContext(AccountContext);
+  const { metamask } = useContext(MetamaskContext);
 
   function handleLogin(password) {
-    const nonce = Buffer.from(
-      Object.values(JSON.parse(window.localStorage.getItem("encryption_nonce")))
-    );
+    const nonce = Buffer.from(Object.values(JSON.parse(window.localStorage.getItem("encryption_nonce"))));
     console.log("nonce: ", nonce);
     const keyHash = pbkdf2Sync(password, "salt", 256, 32, "sha512");
-    const encrypted = Buffer.from(
-      Object.values(JSON.parse(window.localStorage.getItem("mnemonic")))
-    );
+    const encrypted = Buffer.from(Object.values(JSON.parse(window.localStorage.getItem("mnemonic"))));
 
     if (encrypted == null) {
       alert("no account found");
     } else {
       console.log(encrypted);
-      const decrypted = new TextDecoder().decode(
-        _sodium.crypto_secretbox_open_easy(encrypted, nonce, keyHash)
-      );
+      const decrypted = new TextDecoder().decode(_sodium.crypto_secretbox_open_easy(encrypted, nonce, keyHash));
       console.log(decrypted);
       setMnemonic(decrypted);
-      navigate("/dashboard");
+      if (metamask != null) {
+        navigate("/dashboard");
+      } else {
+        navigate("/portfolio");
+      }
     }
   }
   return (

@@ -9,6 +9,7 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState } from "react";
+import { ethers } from "ethers";
 
 function Account({ nameTag, owner, address, balance }) {
   const tokens = ["USDT", "ETH", "USDC", "WBTC"];
@@ -65,7 +66,7 @@ function Account({ nameTag, owner, address, balance }) {
         </IconButton>
       </Box>
       <Box my={1}>
-        Balances: {balance[token]}
+        Balances: {ethers.utils.formatUnits(balance[token].value, 18)}
         <Button
           sx={{
             width: "90px",

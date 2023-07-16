@@ -1,13 +1,22 @@
-import { Box, Button, Modal } from "@mui/material";
+import { Box, Button, CircularProgress, Modal } from "@mui/material";
 import Account from "../components/Accounts";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import CreateTransactionModal from "../components/modal/CreateTransactionModal";
 import CreateDepositModal from "../components/modal/CreateDepositModel";
 import CreateWithdrawModal from "../components/modal/CreateWithdrawModel";
-import { useState } from "react";
+import { useContext, useState, useEffect } from "react";
+import { MetamaskContext } from "src/Router";
+import { getOnChainData } from "src/utils/wallet";
+import axios from "axios";
 
+const tokens = ["USDC", "USDT", "WBTC"];
 function Dashboard() {
   const [openModal, setOpenModal] = useState(0);
+  const { metamask } = useContext(MetamaskContext);
+  const [balanceData, setBalanceData] = useState({});
+  const [zkAccount, setZkAccount] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleNewTx = () => {
     setOpenModal(2);
   };
@@ -21,17 +30,79 @@ function Dashboard() {
 
   const mockData = [
     {
-      nameTag: "Account #1",
-      owner: "0x242ed78bf0fe7672ff01ae6de558e45b3749f197",
-      bjj: "0xcB714F263cBc742A79745faf2B2c47367460D26A",
+      nameTag: "UNDEFINED",
+      owner: "UNDEFINED",
+      bjj: "UNDEFINED",
       balance: {
-        USDT: 500000,
-        USDC: 200000,
-        ETH: 50,
-        WBTC: 20,
+        USDT: {
+          value: 0,
+          nonce: 0,
+          idx: 0,
+        },
+        USDC: {
+          value: 0,
+          nonce: 0,
+          idx: 0,
+        },
+        ETH: {
+          value: 0,
+          nonce: 0,
+          idx: 0,
+        },
+        WBTC: {
+          value: 0,
+          nonce: 0,
+          idx: 0,
+        },
       },
     },
   ];
+
+  useEffect(() => {
+    async function getAccountInfo() {
+      setIsLoading(true);
+      let balances;
+      if (metamask == null) {
+        balances = await getOnChainData(null, tokens);
+      } else {
+        balances = await getOnChainData(metamask.ethAddr, tokens);
+        await axios
+          .get(`http://127.0.0.1:8080/v1/zkPayment/accounts?ethAddr=${metamask.ethAddr}`)
+          .then((res) => {
+            const data = res.data.data;
+            if (data.length == 0) {
+              setZkAccount(mockData);
+            } else {
+              let accounts = {
+                nameTag: "ACTIVED",
+                owner: data[0].ethAddr,
+                bjj: data[0].bjj,
+                balance: {
+                  USDT: { value: 0, nonce: 0, idx: 0 },
+                  USDC: { value: 0, nonce: 0, idx: 0 },
+                  ETH: { value: 0, nonce: 0, idx: 0 },
+                  WBTC: { value: 0, nonce: 0, idx: 0 },
+                },
+              };
+              for (let i = 0; i < data.length; i++) {
+                accounts.balance[data[i].name].value = data[i].balance;
+                accounts.balance[data[i].name].nonce = data[i].nonce;
+                accounts.balance[data[i].name].idx = data[i].idx;
+              }
+              setZkAccount([accounts]);
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+
+      setBalanceData(balances);
+      setIsLoading(false);
+    }
+    getAccountInfo();
+  }, [balanceData, metamask]);
+
   return (
     <Box>
       <Box
@@ -95,14 +166,28 @@ function Dashboard() {
           </Button>
         </Box>
         <Modal open={openModal} onClose={() => setOpenModal(0)}>
-          {openModal === 1?<CreateDepositModal handleClose={() => setOpenModal(0)} />:openModal===2?<CreateWithdrawModal handleClose={() => setOpenModal(0)} />:<CreateTransactionModal handleClose={() => setOpenModal(0)} />}
+          {openModal === 1 ? (
+            <CreateDepositModal balanceData={balanceData} handleClose={() => setOpenModal(0)} />
+          ) : openModal === 2 ? (
+            <CreateWithdrawModal handleClose={() => setOpenModal(0)} />
+          ) : (
+            <CreateTransactionModal handleClose={() => setOpenModal(0)} />
+          )}
           {/* <CreateTransactionModal handleClose={() => setOpenModal(0)} /> */}
         </Modal>
       </Box>
-
-      {mockData.map((item) => (
-        <Account nameTag={item.nameTag} owner={item.owner} address={item.bjj} balance={item.balance} />
-      ))}
+      {zkAccount == null ? (
+        <CircularProgress />
+      ) : (
+        zkAccount.map((item) => (
+          <Account
+            nameTag={item.nameTag}
+            owner={metamask ? metamask.ethAddr : "undefined"}
+            address={metamask ? "0x" + metamask.publicKeyCompressedHex : "undefined"}
+            balance={item.balance}
+          />
+        ))
+      )}
     </Box>
   );
 }

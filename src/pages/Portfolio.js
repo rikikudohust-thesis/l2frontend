@@ -1,7 +1,7 @@
 // import { Box, Button } from "@mui/material";
 
 function Portfolio() {
-  return <>Portfolio</>;
+  return <>Please connect your metamask wallet</>;
 }
 
 export default Portfolio;

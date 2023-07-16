@@ -1,10 +1,31 @@
-import { Box, Button, Input, InputAdornment, IconButton, MenuList, MenuItem, Popover } from "@mui/material";
+import {
+  Box,
+  Button,
+  Input,
+  InputAdornment,
+  IconButton,
+  MenuList,
+  MenuItem,
+  Popover,
+  CircularProgress,
+} from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useContext, useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { AccountContext, MetamaskContext } from "src/Router";
-import { generatePublicAndPrivateKeyStringFromMnemonic } from "src/utils/wallet";
+// import { approveERC20, generatePublicAndPrivateKeyStringFromMnemonic } from "src/utils/wallet";
+import { tokenMap } from "src/utils/constant";
 
+//IMPORT FOR CONTRACT
+import ZKPAYMENTABI from "../../common/abis/zkpayment.json";
+import ERC20ABI from "../../common/abis/erc20.json";
+import { addresses, rpcProviders } from "src/common/globalCfg";
+import { ethers } from "ethers";
+import { fix2Float } from "src/utils/float40";
+
+function BNToNumber(value, decimals) {
+  return ethers.utils.formatUnits(value, decimals);
+}
 const mockData = [
   {
     nameTag: "Account #1",
@@ -32,43 +53,133 @@ const mockData = [
 const tokens = [
   {
     name: "ETH",
-    address: "0x00000000",
+    address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
     decimals: 18,
   },
   {
     name: "USDC",
-    address: "0x00000001",
-    decimals: 6,
+    address: "0x1bc8779f8bC1764Eaf7105fD51597225A410cEB3",
+    decimals: 18,
   },
   {
     name: "USDT",
-    address: "0x00000002",
-    decimals: 6,
+    address: "0x4421Fb4287CCB09433666AA96dF8B94d45B108A4",
+    decimals: 18,
   },
   {
     name: "WBTC",
-    address: "0x00000003",
-    decimals: 8,
+    address: "0x5f7e872767Db9086E143e9503424878d874fccBb",
+    decimals: 18,
   },
 ];
 
-function CreateDepositModal({ handleClose }) {
+function CreateDepositModal({ handleClose, balanceData }) {
   const [senderAnchorEl, setSenderAnchorEl] = useState(null);
   const [tokenAnchorEl, setTokenAnchorEl] = useState(null);
   const [sender, setSender] = useState(mockData[0].address);
   const [token, setToken] = useState(tokens[0].name);
+  const [isLoading, setIsLoading] = useState(false);
   const [receiver, setReceiver] = useState("");
   const [amount, setAmount] = useState(0);
 
   const { metamask } = useContext(MetamaskContext);
   const { mnemonic } = useContext(AccountContext);
 
-  function getAccount(seed, ether) {
-    return generatePublicAndPrivateKeyStringFromMnemonic(seed, ether);
-  }
+  // function getAccount(seed, ether) {
+  //   return generatePublicAndPrivateKeyStringFromMnemonic(seed, ether);
+  // }
 
   function getBalance() {
     return mockData.find((item) => item.address === sender).balance[token];
+  }
+
+  async function getErc20Balance(tokenAddress, userAddress) {
+    const arbitrumProvider = rpcProviders.arbitrum;
+
+    // const erc20 = new ethers.Contract(tokenAddress, ERC20ABI, arbitrumProvider)
+    // const balance = await erc20.balanceOf(userAddress);
+    // return ethers.utils.formatUnits(balance, 18)
+    console.log(tokenAnchorEl);
+    return 50;
+  }
+
+  // uint256 babyPubKey,
+  // uint48 fromIdx,
+  // uint40 loadAmountF,
+  // uint40 amountF,
+  // uint32 tokenID,
+  // uint48 toIdx
+
+  async function handleDeposit() {
+    const arbitrumProvider = rpcProviders.arbitrum;
+    const zkpayment = new ethers.Contract(addresses.arbitrum.zkpaymentAddress, ZKPAYMENTABI, arbitrumProvider);
+    const txData = await zkpayment.populateTransaction
+      .addL1Transaction(
+        metamask.publicKeyCompressed,
+        0,
+        fix2Float(ethers.utils.parseUnits(amount, tokenMap[token].decimals)),
+        0,
+        tokenMap[token].id,
+        0
+      )
+      .then((tx) => tx.data);
+
+    const params = [
+      {
+        from: metamask.ethAddr,
+        to: addresses.arbitrum.zkpaymentAddress,
+        value: 0,
+        data: txData,
+      },
+    ];
+
+    await window.ethereum
+      .request({ method: "eth_sendTransaction", params })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+
+    console.log("Deposit");
+  }
+
+  async function handleApprove() {
+    const provider = rpcProviders.arbitrum;
+    const erc20 = new ethers.Contract(tokenMap[token].address, ERC20ABI, provider);
+    const bigApprove = ethers.utils.parseUnits("10000000000000000000000000", 18);
+
+    const txData = await erc20.populateTransaction
+      .approve(addresses.arbitrum.zkpaymentAddress, bigApprove)
+      .then((tx) => tx.data);
+    console.log(txData);
+    const params = [
+      {
+        from: metamask.ethAddr,
+        to: tokenMap[token].address,
+        value: 0,
+        data: txData,
+      },
+    ];
+
+    await window.ethereum
+      .request({ method: "eth_sendTransaction", params })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  async function handleAction() {
+    if (balanceData[token]) {
+      setIsLoading(true);
+      if (balanceData[token].isApprove) {
+        await handleDeposit();
+      } else {
+        await handleApprove();
+        await handleDeposit();
+      }
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -127,7 +238,7 @@ function CreateDepositModal({ handleClose }) {
             }}
             onClick={(e) => setSenderAnchorEl(e.currentTarget)}
           >
-            <Box width="95%">{getAccount(mnemonic, metamask).ethAddr}</Box>
+            <Box width="95%">{metamask ? metamask.ethAddr : "undefined"}</Box>
             <Box width="5%" display="flex" alignItems="center">
               <KeyboardArrowRightIcon />
             </Box>
@@ -210,7 +321,7 @@ function CreateDepositModal({ handleClose }) {
             }}
             onClick={(e) => setSenderAnchorEl(e.currentTarget)}
           >
-            <Box width="95%">{getAccount(mnemonic, metamask).publicKeyCompressedHex}</Box>
+            <Box width="95%">{metamask ? metamask.publicKeyCompressedHex : "undefined"}</Box>
             <Box width="5%" display="flex" alignItems="center">
               <KeyboardArrowRightIcon />
             </Box>
@@ -290,7 +401,9 @@ function CreateDepositModal({ handleClose }) {
                 width: "70%",
                 height: "50px",
               }}
-              onClick={(e) => setTokenAnchorEl(e.currentTarget)}
+              onClick={(e) => {
+                setTokenAnchorEl(e.currentTarget);
+              }}
             >
               <Box width="80%">{token}</Box>
               <Box width="20%" display="flex" alignItems="center">
@@ -342,13 +455,16 @@ function CreateDepositModal({ handleClose }) {
           <Box display="flex" justifyContent="space-between" sx={{ fontWeight: "600" }}>
             <Box>Amount</Box>
             <Box>
-              Your balance : {getBalance()} {token}
+              Your balance :{" "}
+              {balanceData[token] ? BNToNumber(balanceData[token].balance, balanceData[token].decimals) : 0} {token}
             </Box>
           </Box>
           <Box pt={2}>
             <Input
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => {
+                setAmount(e.target.value);
+              }}
               type="number"
               disableUnderline
               color="#FFF"
@@ -388,7 +504,11 @@ function CreateDepositModal({ handleClose }) {
                       fontFamily: "inherit",
                       marginRight: "5px",
                     }}
-                    onClick={() => setAmount(getBalance())}
+                    onClick={() => {
+                      setAmount(
+                        balanceData[token] ? BNToNumber(balanceData[token].balance, balanceData[token].decimals) : 0
+                      );
+                    }}
                   >
                     MAX
                   </Button>
@@ -411,8 +531,18 @@ function CreateDepositModal({ handleClose }) {
             borderRadius: "10px",
             fontFamily: "inherit",
           }}
+          onClick={async () => await handleAction()}
         >
-          Finish
+          {/* Finish */}
+          {isLoading ? (
+            <CircularProgress sx={{ color: "#FFF", fontSize: "inherit" }} />
+          ) : !balanceData[token] ? (
+            "Not Active"
+          ) : balanceData[token].isApprove ? (
+            "Deposit"
+          ) : (
+            "Approve & Deposit"
+          )}
         </Button>
       </Box>
     </Box>
