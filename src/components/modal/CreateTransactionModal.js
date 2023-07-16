@@ -7,10 +7,16 @@ import {
   MenuList,
   MenuItem,
   Popover,
+  CircularProgress,
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { ethers } from "ethers";
+import { tokenMap } from "src/utils/constant";
+import { signTransaction } from "src/utils/wallet";
+import axios from "axios";
+import { MetamaskContext } from "src/Router";
 
 const mockData = [
   {
@@ -59,16 +65,65 @@ const tokens = [
   },
 ];
 
-function CreateTransactionModal({ handleClose }) {
+function CreateTransactionModal({ handleClose, zkAccount }) {
   const [senderAnchorEl, setSenderAnchorEl] = useState(null);
   const [tokenAnchorEl, setTokenAnchorEl] = useState(null);
   const [sender, setSender] = useState(mockData[0].address);
   const [token, setToken] = useState(tokens[0].name);
   const [receiver, setReceiver] = useState("");
   const [amount, setAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { metamask } = useContext(MetamaskContext);
 
   function getBalance() {
-    return mockData.find((item) => item.address === sender).balance[token];
+    return ethers.utils.formatUnits(zkAccount.balance[token].value, 18);
+  }
+
+  async function handleTransfer() {
+    setIsLoading(true);
+    let toAccount;
+    await axios
+      .get(`http://127.0.0.1:8080/v1/zkPayment/accountsEth?ethAddr=${receiver}&tokenID=${tokenMap[token].id}`)
+      .then((res) => {
+        toAccount = res.data.data;
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    if (toAccount.length == 0) {
+      setIsLoading(false);
+      return;
+    }
+
+    const to = toAccount[0];
+    const body = {
+      chainId: 1,
+      fromAccountIndex: zkAccount.balance[token].idx,
+      tokenId: tokenMap[token].id,
+      amount: ethers.utils.parseUnits(amount, 18).toString(),
+      nonce: zkAccount.balance[token].nonce,
+      toAccountIndex: to.idx,
+    };
+    const tx = signTransaction(body, body, metamask.privateKey);
+    console.log(tx);
+
+    await axios
+      .post(`http://127.0.0.1:8080/v1/zkPayment/transactions`, {
+        fromIdx: tx.fromAccountIndex,
+        toIdx: tx.toAccountIndex,
+        tokenID: tx.tokenId,
+        amount: tx.amount,
+        nonce: tx.nonce,
+        signature: tx.signature,
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    setIsLoading(false);
   }
 
   return (
@@ -100,11 +155,7 @@ function CreateTransactionModal({ handleClose }) {
           <CancelIcon sx={{ color: "#FFF" }} />
         </IconButton>
       </Box>
-      <Box
-        sx={{ display: "flex", justifyContent: "center", paddingTop: "20px" }}
-      >
-        New Transaction
-      </Box>
+      <Box sx={{ display: "flex", justifyContent: "center", paddingTop: "20px" }}>New Transaction</Box>
       <Box
         sx={{
           display: "flex",
@@ -130,7 +181,7 @@ function CreateTransactionModal({ handleClose }) {
             }}
             onClick={(e) => setSenderAnchorEl(e.currentTarget)}
           >
-            <Box width="95%">{sender}</Box>
+            <Box width="95%">{zkAccount.owner}</Box>
             <Box width="5%" display="flex" alignItems="center">
               <KeyboardArrowRightIcon />
             </Box>
@@ -175,11 +226,7 @@ function CreateTransactionModal({ handleClose }) {
                         }}
                         onClick={() => setSender(item.address)}
                       >
-                        <Box
-                          display="flex"
-                          justifyContent="flex-start"
-                          width="100%"
-                        >
+                        <Box display="flex" justifyContent="flex-start" width="100%">
                           {item.address}
                         </Box>
                       </MenuItem>
@@ -282,10 +329,7 @@ function CreateTransactionModal({ handleClose }) {
                   {tokens.map(
                     (item) =>
                       item.name !== token && (
-                        <MenuItem
-                          sx={{ fontFamily: "Lexend Exa" }}
-                          onClick={() => setToken(item.name)}
-                        >
+                        <MenuItem sx={{ fontFamily: "Lexend Exa" }} onClick={() => setToken(item.name)}>
                           {item.name}
                         </MenuItem>
                       )
@@ -296,11 +340,7 @@ function CreateTransactionModal({ handleClose }) {
           </Box>
         </Box>
         <Box sx={{ width: "70%", display: "flex", flexDirection: "column" }}>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            sx={{ fontWeight: "600" }}
-          >
+          <Box display="flex" justifyContent="space-between" sx={{ fontWeight: "600" }}>
             <Box>Amount</Box>
             <Box>
               Your balance : {getBalance()} {token}
@@ -349,7 +389,7 @@ function CreateTransactionModal({ handleClose }) {
                       fontFamily: "inherit",
                       marginRight: "5px",
                     }}
-                    onClick={() => setAmount(getBalance())}
+                    onClick={() => setAmount(getBalance() - 1)}
                   >
                     MAX
                   </Button>
@@ -360,20 +400,27 @@ function CreateTransactionModal({ handleClose }) {
         </Box>
       </Box>
       <Box width="90%" display="flex" justifyContent="flex-end" py={3}>
-        <Button
-          sx={{
-            width: "20%",
-            fontSize: "15px",
-            fontWeight: "600",
-            textTransform: "none",
-            color: "#FFF",
-            border: "1px solid #5C80BC",
-            borderRadius: "10px",
-            fontFamily: "inherit",
-          }}
-        >
-          Finish
-        </Button>
+        {isLoading ? (
+          <CircularProgress />
+        ) : (
+          <Button
+            sx={{
+              width: "20%",
+              fontSize: "15px",
+              fontWeight: "600",
+              textTransform: "none",
+              color: "#FFF",
+              border: "1px solid #5C80BC",
+              borderRadius: "10px",
+              fontFamily: "inherit",
+            }}
+            onClick={async () => {
+              await handleTransfer();
+            }}
+          >
+            Send
+          </Button>
+        )}
       </Box>
     </Box>
   );

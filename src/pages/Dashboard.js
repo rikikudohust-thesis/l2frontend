@@ -14,7 +14,7 @@ function Dashboard() {
   const [openModal, setOpenModal] = useState(0);
   const { metamask } = useContext(MetamaskContext);
   const [balanceData, setBalanceData] = useState({});
-  const [zkAccount, setZkAccount] = useState(null);
+  const [zkAccount, setZkAccount] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNewTx = () => {
@@ -105,88 +105,90 @@ function Dashboard() {
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "15px",
-        }}
-      >
-        <Box display="flex" justifyContent="space-between" width="31%">
-          <Button
-            sx={{
-              bgcolor: "#416CB8",
-              padding: "10px",
-              borderRadius: "10px",
-              textTransform: "none",
-              fontFamily: "inherit",
-              color: "inherit",
-              "&:hover": {
-                bgcolor: "#416CB8",
-              },
-            }}
-            onClick={handleNewDeposit}
-          >
-            <AddBoxIcon sx={{ marginRight: "5px" }} />
-            New Deposit
-          </Button>
-          <Button
-            sx={{
-              bgcolor: "#416CB8",
-              padding: "10px",
-              borderRadius: "10px",
-              textTransform: "none",
-              fontFamily: "inherit",
-              color: "inherit",
-              "&:hover": {
-                bgcolor: "#416CB8",
-              },
-            }}
-            onClick={handleNewTx}
-          >
-            <AddBoxIcon sx={{ marginRight: "5px" }} />
-            New Withdraw
-          </Button>
-          <Button
-            sx={{
-              bgcolor: "#416CB8",
-              padding: "10px",
-              borderRadius: "10px",
-              textTransform: "none",
-              fontFamily: "inherit",
-              color: "inherit",
-              "&:hover": {
-                bgcolor: "#416CB8",
-              },
-            }}
-            onClick={handleNewWithdraw}
-          >
-            <AddBoxIcon sx={{ marginRight: "5px" }} />
-            New Transaction
-          </Button>
-        </Box>
-        <Modal open={openModal} onClose={() => setOpenModal(0)}>
-          {openModal === 1 ? (
-            <CreateDepositModal balanceData={balanceData} handleClose={() => setOpenModal(0)} />
-          ) : openModal === 2 ? (
-            <CreateWithdrawModal handleClose={() => setOpenModal(0)} />
-          ) : (
-            <CreateTransactionModal handleClose={() => setOpenModal(0)} />
-          )}
-          {/* <CreateTransactionModal handleClose={() => setOpenModal(0)} /> */}
-        </Modal>
-      </Box>
-      {zkAccount == null ? (
+      {zkAccount.length == 0 ? (
         <CircularProgress />
       ) : (
-        zkAccount.map((item) => (
-          <Account
-            nameTag={item.nameTag}
-            owner={metamask ? metamask.ethAddr : "undefined"}
-            address={metamask ? "0x" + metamask.publicKeyCompressedHex : "undefined"}
-            balance={item.balance}
-          />
-        ))
+        <Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginBottom: "15px",
+            }}
+          >
+            <Box display="flex" justifyContent="space-between" width="31%">
+              <Button
+                sx={{
+                  bgcolor: "#416CB8",
+                  padding: "10px",
+                  borderRadius: "10px",
+                  textTransform: "none",
+                  fontFamily: "inherit",
+                  color: "inherit",
+                  "&:hover": {
+                    bgcolor: "#416CB8",
+                  },
+                }}
+                onClick={handleNewDeposit}
+              >
+                <AddBoxIcon sx={{ marginRight: "5px" }} />
+                New Deposit
+              </Button>
+              <Button
+                sx={{
+                  bgcolor: "#416CB8",
+                  padding: "10px",
+                  borderRadius: "10px",
+                  textTransform: "none",
+                  fontFamily: "inherit",
+                  color: "inherit",
+                  "&:hover": {
+                    bgcolor: "#416CB8",
+                  },
+                }}
+                onClick={handleNewTx}
+              >
+                <AddBoxIcon sx={{ marginRight: "5px" }} />
+                New Withdraw
+              </Button>
+              <Button
+                sx={{
+                  bgcolor: "#416CB8",
+                  padding: "10px",
+                  borderRadius: "10px",
+                  textTransform: "none",
+                  fontFamily: "inherit",
+                  color: "inherit",
+                  "&:hover": {
+                    bgcolor: "#416CB8",
+                  },
+                }}
+                onClick={handleNewWithdraw}
+              >
+                <AddBoxIcon sx={{ marginRight: "5px" }} />
+                New Transaction
+              </Button>
+            </Box>
+            <Modal open={openModal} onClose={() => setOpenModal(0)}>
+              {openModal === 1 ? (
+                <CreateDepositModal balanceData={balanceData} handleClose={() => setOpenModal(0)} />
+              ) : openModal === 2 ? (
+                <CreateWithdrawModal handleClose={() => setOpenModal(0)} />
+              ) : (
+                <CreateTransactionModal zkAccount={zkAccount[0]} handleClose={() => setOpenModal(0)} />
+              )}
+              {/* <CreateTransactionModal handleClose={() => setOpenModal(0)} /> */}
+            </Modal>
+          </Box>
+          {zkAccount.map((item) => (
+            <Account
+              nameTag={item.nameTag}
+              owner={metamask ? metamask.ethAddr : "undefined"}
+              address={metamask ? "0x" + metamask.publicKeyCompressedHex : "undefined"}
+              balance={item.balance}
+            />
+          ))}
+        </Box>
       )}
     </Box>
   );
