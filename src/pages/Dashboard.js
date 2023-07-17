@@ -9,6 +9,7 @@ import { MetamaskContext } from "src/Router";
 import { getOnChainData } from "src/utils/wallet";
 import axios from "axios";
 
+
 const tokens = ["USDC", "USDT", "WBTC"];
 function Dashboard() {
   const [openModal, setOpenModal] = useState(0);
@@ -173,7 +174,7 @@ function Dashboard() {
               {openModal === 1 ? (
                 <CreateDepositModal balanceData={balanceData} handleClose={() => setOpenModal(0)} />
               ) : openModal === 2 ? (
-                <CreateWithdrawModal handleClose={() => setOpenModal(0)} />
+                <CreateWithdrawModal zkAccount={zkAccount[0]} handleClose={() => setOpenModal(0)} />
               ) : (
                 <CreateTransactionModal zkAccount={zkAccount[0]} handleClose={() => setOpenModal(0)} />
               )}

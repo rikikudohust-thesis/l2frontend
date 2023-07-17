@@ -11,6 +11,7 @@ import {
   import CancelIcon from "@mui/icons-material/Cancel";
   import { useState } from "react";
   import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+  import { ethers } from "ethers";
   
   const mockData = [
     {
@@ -59,7 +60,7 @@ import {
     },
   ];
   
-  function CreateWithdrawModal({ handleClose }) {
+  function CreateWithdrawModal({zkAccount, handleClose }) {
     const [senderAnchorEl, setSenderAnchorEl] = useState(null);
     const [tokenAnchorEl, setTokenAnchorEl] = useState(null);
     const [sender, setSender] = useState(mockData[0].address);
@@ -68,7 +69,7 @@ import {
     const [amount, setAmount] = useState(0);
   
     function getBalance() {
-      return mockData.find((item) => item.address === sender).balance[token];
+      return ethers.utils.formatUnits(zkAccount.balance[token].value, 18);
     }
   
     return (
