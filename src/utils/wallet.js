@@ -91,7 +91,7 @@ function buildElement1(tx) {
 
   res = Scalar.add(res, Scalar.fromString(tx.toEthereumAddress || "0", 16)); // ethAddr --> 160 bits
   //   console.log("Here")
-  console.log(Scalar.shl);
+  // console.log(Scalar.shl);
   res = Scalar.add(res, Scalar.shl(fix2Float(tx.amount), 160)); // amountF --> 40 bits
   res = Scalar.add(res, Scalar.shl(tx.maxNumBatch || 0, 200)); // maxNumBatch --> 32 bits
 
@@ -116,13 +116,13 @@ function buildTxCompressedData(tx) {
 
 function buildTransactionHashMessage(encodedTransaction) {
   const txCompressedData = buildTxCompressedData(encodedTransaction);
-  console.log(`txCompressedData: ${txCompressedData}`);
+  // console.log(`txCompressedData: ${txCompressedData}`);
   const element1 = buildElement1(encodedTransaction);
-  console.log(`element1: ${element1}`);
-  console.log(`toBjjAy: ${encodedTransaction.toBjjAy}`);
-  console.log(`rqTxCompressDataV2: ${encodedTransaction.rqTxCompressedDataV2}`);
-  console.log(`rqToEthereumAddress: ${encodedTransaction.rqToEthereumAddress}`);
-  console.log(`rqToBjjAy: ${encodedTransaction.rqToBjjAy}`);
+  // console.log(`element1: ${element1}`);
+  // console.log(`toBjjAy: ${encodedTransaction.toBjjAy}`);
+  // console.log(`rqTxCompressDataV2: ${encodedTransaction.rqTxCompressedDataV2}`);
+  // console.log(`rqToEthereumAddress: ${encodedTransaction.rqToEthereumAddress}`);
+  // console.log(`rqToBjjAy: ${encodedTransaction.rqToBjjAy}`);
   const h = poseidon([
     txCompressedData,
     element1,
@@ -136,13 +136,14 @@ function buildTransactionHashMessage(encodedTransaction) {
 }
 
 export function signTransaction(transaction, encodedTransaction, prv) {
+  console.log(ethers.utils.hexlify(prv))
   const hashMessage = buildTransactionHashMessage(encodedTransaction);
-  console.log(`hashMessage: ${hashMessage}`);
+  // console.log(`hashMessage: ${hashMessage}`);
   const signature = eddsa.signPoseidon(prv, hashMessage);
-  console.log("signature: ", signature);
+  // console.log("signature: ", signature);
   const packedSignature = eddsa.packSignature(signature);
   transaction.signature = packedSignature.toString("hex");
-  console.log("packageSignature: ", packedSignature.toString("hex"));
+  // console.log("packageSignature: ", packedSignature.toString("hex"));
 
   return transaction;
 }

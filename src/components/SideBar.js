@@ -1,10 +1,11 @@
 import { Drawer, Box, List, Button } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
-import { AccountContext } from "../Router";
+import { AccountContext, MetamaskContext } from "../Router";
 
 function Sidebar() {
   const { mnemonic } = useContext(AccountContext);
+  const { metamask } = useContext(MetamaskContext);
   const [open, setOpen] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
@@ -17,6 +18,21 @@ function Sidebar() {
     {
       name: "Wallet Recovery",
       route: "/wallet-recovery",
+    },
+  ];
+
+  const connectedRoutes = [
+    {
+      name: "Dashboard",
+      route: "/dashboard",
+    },
+    {
+      name: "History",
+      route: "/history",
+    },
+    {
+      name: "Setting",
+      route: "/setting",
     },
   ];
 
@@ -86,34 +102,51 @@ function Sidebar() {
 
         <List>
           {mnemonic !== null
-            ? loggedRoutes.map((item) => (
-                <Box>
-                  <Button
-                    disableTouchRipple
-                    onClick={() => navigate(item.route)}
-                    sx={{
-                      fontFamily: "inherit",
-                      fontSize: "18px",
-                      textTransform: "none",
-                      width: "100%",
-                      paddingBottom: "10px",
-                      color: `${
-                        location.pathname === item.route ? "#70BDD6" : "#FFF"
-                      }`,
-                      borderRight: `
+            ? metamask === null
+              ? loggedRoutes.map((item) => (
+                  <Box>
+                    <Button
+                      disableTouchRipple
+                      onClick={() => navigate(item.route)}
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "18px",
+                        textTransform: "none",
+                        width: "100%",
+                        paddingBottom: "10px",
+                        color: `${location.pathname === item.route ? "#70BDD6" : "#FFF"}`,
+                        borderRight: `
                          4px
-                       solid  ${
-                         location.pathname === item.route
-                           ? "#009DDC"
-                           : "transparent"
-                       }`,
-                      borderRadius: "0px",
-                    }}
-                  >
-                    {item.name}
-                  </Button>
-                </Box>
-              ))
+                       solid  ${location.pathname === item.route ? "#009DDC" : "transparent"}`,
+                        borderRadius: "0px",
+                      }}
+                    >
+                      {item.name}
+                    </Button>
+                  </Box>
+                ))
+              : connectedRoutes.map((item) => (
+                  <Box>
+                    <Button
+                      disableTouchRipple
+                      onClick={() => navigate(item.route)}
+                      sx={{
+                        fontFamily: "inherit",
+                        fontSize: "18px",
+                        textTransform: "none",
+                        width: "100%",
+                        paddingBottom: "10px",
+                        color: `${location.pathname === item.route ? "#70BDD6" : "#FFF"}`,
+                        borderRight: `
+                         4px
+                       solid  ${location.pathname === item.route ? "#009DDC" : "transparent"}`,
+                        borderRadius: "0px",
+                      }}
+                    >
+                      {item.name}
+                    </Button>
+                  </Box>
+                ))
             : defaultRoutes.map((item) => (
                 <Box display="flex" justifyContent="center">
                   <Button
@@ -126,16 +159,10 @@ function Sidebar() {
                       textTransform: "none",
                       width: "100%",
                       paddingBottom: "10px",
-                      color: `${
-                        location.pathname === item.route ? "#70BDD6" : "#FFF"
-                      }`,
+                      color: `${location.pathname === item.route ? "#70BDD6" : "#FFF"}`,
                       borderRight: `
                          4px
-                       solid  ${
-                         location.pathname === item.route
-                           ? "#70BDD6"
-                           : "transparent"
-                       }`,
+                       solid  ${location.pathname === item.route ? "#70BDD6" : "transparent"}`,
                       borderRadius: "0px",
                     }}
                   >

@@ -24,3 +24,16 @@ export const tokenMap = {
     id: 3,
   },
 };
+
+export const stateTx = {
+  pending: "PENDING",
+  fged: "CONFIRMED",
+  fing: "VERIFIED"
+}
+
+export const tokenEnum = {
+  0: "ETH",
+  1: "USDC",
+  2: "USDT",
+  3: "WBTC",
+}
