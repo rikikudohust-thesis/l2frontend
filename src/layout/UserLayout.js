@@ -70,16 +70,16 @@ function UserLayout({ childComponent }) {
   //   if (addressList.length === 0) return handleDisconnectWallet();
   //   else return handleConnectWallet();
   // };
-  const handleAction = () => {
+  const handleAction = async () => {
     if (
       metamask != null
       // localStorage.getItem("Connect") != undefined
     ) {
       console.log("Disconnect");
-      return handleDisconnectWallet();
+      await handleDisconnectWallet();
     } else {
       console.log("Connect");
-      return handleConnectWallet();
+      await handleConnectWallet();
     }
   };
 
@@ -194,7 +194,7 @@ function UserLayout({ childComponent }) {
               paddingX: "10px",
               fontFamily: "inherit",
             }}
-            onClick={handleAction}
+            onClick={async () => await handleAction()}
           >
             {metamask ? truncateString(btnName, 15) : "CONNECT"}
           </Button>

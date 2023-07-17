@@ -13,9 +13,11 @@ import {
   TableRow,
   CircularProgress,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { ethers } from "ethers";
+import { MetamaskContext } from "src/Router";
+import {stateTx, tokenEnum} from 'src/utils/constant'
 
 const addresses = ["0xcB714F263cBc742A79745faf2B2c47367460D26A", "0x990b82dc8ab6134f482d2cad3bba11c537cd7b45"];
 
@@ -34,7 +36,7 @@ function History() {
   const [sender, setSender] = useState(addresses[0]);
   const [isLoading, setIsLoading] = useState(false);
   const [ethPrice, setETHPrice] = useState(0);
-
+  const {metamask} = useContext(MetamaskContext)
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -45,19 +47,18 @@ function History() {
   useEffect(() => {
     async function getAccountInfo() {
       setIsLoading(true);
-      await axios.get(`https://api.aascan.org/api/v1/account?chain_id=5&address=${sender}&type=sender`).then((res) => {
-        console.log(res.data.data.list);
+      let txes;
+      if (!metamask) {
+        setIsLoading(false)
+        return;
+      }
+      setSender(metamask.ethAddr)
+      await axios.get(`http://127.0.0.1:8080/v1/zkPayment/transactions?fromHezEthereumAddress=${metamask.ethAddr}`).then((res) => {
+        console.log(res.data.data);
         if (res.data.data != null) {
-          setAccountInfo(res.data.data.list);
+          setTransactionInfo(res.data.data);
         }
       });
-      await axios
-        .get("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD", {
-          headers: {
-            Authorization: "Bearer 3575f756f525440d5f62336c9670798c11d4ed854663c2956c17b5fb19209c42",
-          },
-        })
-        .then((res) => setETHPrice(res.data.USD));
       setIsLoading(false);
     }
     getAccountInfo();
@@ -65,34 +66,40 @@ function History() {
   const mockTxInfo = [
     {
       txHash: "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
-      status: "PENDING",
-      type: "L1TX",
+      state: "PENDING",
+      type: true,
       txType: "Deposit",
       sender: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
+      fromEthAddr: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
       receiver: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
       token: "USDC",
+      depositAmount: 0,
       amount: "100000000000000000000000",
       batch: 10,
     },
     {
       txHash: "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
-      status: "PENDING",
-      type: "L1TX",
+      state: "PENDING",
+      type: true,
       txType: "Deposit",
       sender: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
+      fromEthAddr: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
       receiver: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
       token: "USDC",
+      depositAmount: 0,
       amount: "100000000000000000000000",
       batch: 10,
     },
     {
       txHash: "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
-      status: "PENDING",
-      type: "L1TX",
+      state: "PENDING",
+      type: true,
       txType: "Deposit",
       sender: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
+      fromEthAddr: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
       receiver: "0xc8b6496af2c93f47485bcda9b3ffe5bde1a0d178",
       token: "USDC",
+      depositAmount: 0,
       amount: "100000000000000000000000",
       batch: 10,
     },
@@ -101,7 +108,7 @@ function History() {
   return (
     <Box display="flex" flexDirection="column">
       <Box display="flex" alignItems="center">
-        <Box pr={2}>Sender: </Box>
+        <Box pr={2}>Account: </Box>
         <Button
           sx={{
             textTransform: "none",
@@ -179,7 +186,7 @@ function History() {
                 TxHash
               </TableCell>
               <TableCell align="left" sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
-                Status
+                State
               </TableCell>
               <TableCell
                 // align="left"
@@ -205,31 +212,33 @@ function History() {
               >
                 Receiver
               </TableCell>
+              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>L1Amount</TableCell>
               <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>Amount</TableCell>
               <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>Token</TableCell>
               <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>Batch</TableCell>
             </TableRow>
           </TableHead>
-          {accountInfo === null ? (
+          {transactionInfo === null ? (
             <></>
           ) : (
             <TableBody>
-              {mockTxInfo.map((tx) => (
+              {transactionInfo.map((tx) => (
                 <TableRow hover>
                   <TableCell align="left" sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
                     {truncateString(tx.txHash, 30)}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.status}</TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.type}</TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.state?stateTx[tx.state]:tx.l1Batch != 0 ? "CONFIRMED":"PEDING"}</TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.type?"L1":"L2"}</TableCell>
                   <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.txType}</TableCell>
                   <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
-                    {truncateString(tx.sender, 20)}
+                    {tx.sender != '0x0000000000000000000000000000000000000000'?truncateString(tx.sender, 20):truncateString(tx.fromEthAddr, 20)}
                   </TableCell>
                   <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
                     {truncateString(tx.receiver, 20)}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{ethers.utils.formatUnits(tx.amount, 18)}</TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.token}</TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.depositAmount?ethers.utils.formatUnits(tx.depositAmount, 18):0}</TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{ethers.utils.formatUnits(tx.amount, 18).toString()}</TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tokenEnum[tx.token]}</TableCell>
                   <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.batch}</TableCell>
                 </TableRow>
               ))}
@@ -238,7 +247,7 @@ function History() {
         </Table>
         <Box pt={2} display="flex" justifyContent="center">
           {" "}
-          {isLoading ? <CircularProgress /> : accountInfo === null ? "No history found" : <></>}
+          {isLoading ? <CircularProgress /> : transactionInfo === null ? "No history found" : <></>}
         </Box>
       </Box>
     </Box>
