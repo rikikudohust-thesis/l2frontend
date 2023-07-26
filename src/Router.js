@@ -10,6 +10,7 @@ import Portfolio from "./pages/Portfolio";
 import History from "./pages/History";
 import Setting from "./pages/Setting";
 import { createContext, useState } from "react";
+import Exit from "./pages/Exit";
 
 export const AccountContext = createContext(null);
 
@@ -46,6 +47,10 @@ function Router() {
             <Route
               path="/setting"
               element={<UserLayout childComponent={<Setting />} />}
+            />
+            <Route
+              path="/exit"
+              element={<UserLayout childComponent={<Exit />} />}
             />
           </Routes>
         </AccountContext.Provider>

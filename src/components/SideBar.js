@@ -37,6 +37,10 @@ function Sidebar() {
       name: "Setting",
       route: "/setting",
     },
+    {
+      name: "Exit",
+      route: "/exit",
+    },
   ];
 
   return (
