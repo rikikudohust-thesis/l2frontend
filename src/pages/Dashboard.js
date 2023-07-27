@@ -5,13 +5,15 @@ import CreateTransactionModal from "../components/modal/CreateTransactionModal";
 import CreateDepositModal from "../components/modal/CreateDepositModel";
 import CreateWithdrawModal from "../components/modal/CreateWithdrawModel";
 import { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { MetamaskContext } from "src/Router";
 import { getOnChainData } from "src/utils/wallet";
+import { url } from "src/common/globalCfg";
 import axios from "axios";
-
 
 const tokens = ["USDC", "USDT", "WBTC"];
 function Dashboard() {
+  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(0);
   const { metamask } = useContext(MetamaskContext);
   const [balanceData, setBalanceData] = useState({});
@@ -64,11 +66,12 @@ function Dashboard() {
       setIsLoading(true);
       let balances;
       if (metamask == null) {
-        balances = await getOnChainData(null, tokens);
+        // balances = await getOnChainData(null, tokens);
+        navigate("/getting-started")
       } else {
         balances = await getOnChainData(metamask.ethAddr, tokens);
         await axios
-          .get(`http://127.0.0.1:8080/v1/zkPayment/accounts?ethAddr=${metamask.ethAddr}`)
+          .get(`${url}/v1/zkPayment/accounts?ethAddr=${metamask.ethAddr}`)
           .then((res) => {
             const data = res.data.data;
             if (data.length == 0) {
@@ -172,11 +175,20 @@ function Dashboard() {
             </Box>
             <Modal open={openModal} onClose={() => setOpenModal(0)}>
               {openModal === 1 ? (
-                <CreateDepositModal balanceData={balanceData} handleClose={() => setOpenModal(0)} />
+                <CreateDepositModal
+                  balanceData={balanceData}
+                  handleClose={() => setOpenModal(0)}
+                />
               ) : openModal === 2 ? (
-                <CreateWithdrawModal zkAccount={zkAccount[0]} handleClose={() => setOpenModal(0)} />
+                <CreateWithdrawModal
+                  zkAccount={zkAccount[0]}
+                  handleClose={() => setOpenModal(0)}
+                />
               ) : (
-                <CreateTransactionModal zkAccount={zkAccount[0]} handleClose={() => setOpenModal(0)} />
+                <CreateTransactionModal
+                  zkAccount={zkAccount[0]}
+                  handleClose={() => setOpenModal(0)}
+                />
               )}
               {/* <CreateTransactionModal handleClose={() => setOpenModal(0)} /> */}
             </Modal>
@@ -185,7 +197,9 @@ function Dashboard() {
             <Account
               nameTag={item.nameTag}
               owner={metamask ? metamask.ethAddr : "undefined"}
-              address={metamask ? "0x" + metamask.publicKeyCompressedHex : "undefined"}
+              address={
+                metamask ? "0x" + metamask.publicKeyCompressedHex : "undefined"
+              }
               balance={item.balance}
             />
           ))}

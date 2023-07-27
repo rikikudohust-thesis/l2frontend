@@ -84,7 +84,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
     setIsLoading(true);
     let toAccount;
     await axios
-      .get(`http://127.0.0.1:8080/v1/zkPayment/accountsEth?ethAddr=${receiver}&tokenID=${tokenMap[token].id}`)
+      .get(`http://34.87.26.249:8080/v1/zkPayment/accountsEth?ethAddr=${receiver}&tokenID=${tokenMap[token].id}`)
       .then((res) => {
         toAccount = res.data.data;
       })
@@ -109,7 +109,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
     console.log(tx);
 
     await axios
-      .post(`http://127.0.0.1:8080/v1/zkPayment/transactions`, {
+      .post(`http://34.87.26.249:8080/v1/zkPayment/transactions`, {
         fromIdx: tx.fromAccountIndex,
         toIdx: tx.toAccountIndex,
         tokenID: tx.tokenId,

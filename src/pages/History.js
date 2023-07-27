@@ -17,9 +17,13 @@ import { useContext, useEffect, useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { ethers } from "ethers";
 import { MetamaskContext } from "src/Router";
-import {stateTx, tokenEnum} from 'src/utils/constant'
+import { stateTx, tokenEnum } from "src/utils/constant";
+import { url } from "src/common/globalCfg";
 
-const addresses = ["0xcB714F263cBc742A79745faf2B2c47367460D26A", "0x990b82dc8ab6134f482d2cad3bba11c537cd7b45"];
+const addresses = [
+  "0xcB714F263cBc742A79745faf2B2c47367460D26A",
+  "0x990b82dc8ab6134f482d2cad3bba11c537cd7b45",
+];
 
 function truncateString(str, num) {
   if (str.length > num || num <= 7) {
@@ -36,7 +40,7 @@ function History() {
   const [sender, setSender] = useState(addresses[0]);
   const [isLoading, setIsLoading] = useState(false);
   const [ethPrice, setETHPrice] = useState(0);
-  const {metamask} = useContext(MetamaskContext)
+  const { metamask } = useContext(MetamaskContext);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -49,23 +53,33 @@ function History() {
       setIsLoading(true);
       let txes;
       if (!metamask) {
-        setIsLoading(false)
+        setIsLoading(false);
         return;
       }
-      setSender(metamask.ethAddr)
-      await axios.get(`http://127.0.0.1:8080/v1/zkPayment/transactions?fromHezEthereumAddress=${metamask.ethAddr}`).then((res) => {
-        console.log(res.data.data);
-        if (res.data.data != null) {
-          setTransactionInfo(res.data.data);
-        }
-      });
+      setSender(metamask.ethAddr);
+      try {
+        await axios
+          .get(
+            `${url}/v1/zkPayment/transactions?fromHezEthereumAddress=${metamask.ethAddr}`
+          )
+          .then((res) => {
+            console.log(res.data.data);
+            if (res.data.data != null) {
+              setTransactionInfo(res.data.data);
+            }
+          });
+      } catch (e) {
+        console.log(e);
+      }
+
       setIsLoading(false);
     }
     getAccountInfo();
   }, [sender]);
   const mockTxInfo = [
     {
-      txHash: "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
+      txHash:
+        "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
       state: "PENDING",
       type: true,
       txType: "Deposit",
@@ -78,7 +92,8 @@ function History() {
       batch: 10,
     },
     {
-      txHash: "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
+      txHash:
+        "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
       state: "PENDING",
       type: true,
       txType: "Deposit",
@@ -91,7 +106,8 @@ function History() {
       batch: 10,
     },
     {
-      txHash: "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
+      txHash:
+        "0x598aac439a1271e44bf8a3a50a00e66298560a73ad7bc1bf0faa59d8875b0fe5",
       state: "PENDING",
       type: true,
       txType: "Deposit",
@@ -168,7 +184,11 @@ function History() {
                       }}
                       onClick={() => setSender(addr)}
                     >
-                      <Box display="flex" justifyContent="flex-start" width="100%">
+                      <Box
+                        display="flex"
+                        justifyContent="flex-start"
+                        width="100%"
+                      >
                         {addr}
                       </Box>
                     </MenuItem>
@@ -182,10 +202,16 @@ function History() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell align="left" sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+              <TableCell
+                align="left"
+                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+              >
                 TxHash
               </TableCell>
-              <TableCell align="left" sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+              <TableCell
+                align="left"
+                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+              >
                 State
               </TableCell>
               <TableCell
@@ -212,10 +238,18 @@ function History() {
               >
                 Receiver
               </TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>L1Amount</TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>Amount</TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>Token</TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>Batch</TableCell>
+              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                L1Amount
+              </TableCell>
+              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                Amount
+              </TableCell>
+              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                Token
+              </TableCell>
+              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                Batch
+              </TableCell>
             </TableRow>
           </TableHead>
           {transactionInfo === null ? (
@@ -224,22 +258,47 @@ function History() {
             <TableBody>
               {transactionInfo.map((tx) => (
                 <TableRow hover>
-                  <TableCell align="left" sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell
+                    align="left"
+                    sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                  >
                     {truncateString(tx.txHash, 30)}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.state?stateTx[tx.state]:tx.l1Batch != 0 ? "CONFIRMED":"PEDING"}</TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.type?"L1":"L2"}</TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.txType}</TableCell>
                   <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
-                    {tx.sender != '0x0000000000000000000000000000000000000000'?truncateString(tx.sender, 20):truncateString(tx.fromEthAddr, 20)}
+                    {tx.state
+                      ? stateTx[tx.state]
+                      : tx.l1Batch != 0
+                      ? "CONFIRMED"
+                      : "PENDING"}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                    {tx.type ? "L1" : "L2"}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                    {tx.txType}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                    {tx.sender != "0x0000000000000000000000000000000000000000"
+                      ? truncateString(tx.sender, 20)
+                      : truncateString(tx.fromEthAddr, 20)}
                   </TableCell>
                   <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
                     {truncateString(tx.receiver, 20)}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.depositAmount?ethers.utils.formatUnits(tx.depositAmount, 18):0}</TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{ethers.utils.formatUnits(tx.amount, 18).toString()}</TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tokenEnum[tx.token]}</TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>{tx.batch}</TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                    {tx.depositAmount
+                      ? ethers.utils.formatUnits(tx.depositAmount, 18)
+                      : 0}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                    {ethers.utils.formatUnits(tx.amount, 18).toString()}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                    {tokenEnum[tx.token]}
+                  </TableCell>
+                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                    {tx.batch}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -247,7 +306,13 @@ function History() {
         </Table>
         <Box pt={2} display="flex" justifyContent="center">
           {" "}
-          {isLoading ? <CircularProgress /> : transactionInfo === null ? "No history found" : <></>}
+          {isLoading ? (
+            <CircularProgress />
+          ) : transactionInfo === null ? (
+            "No history found"
+          ) : (
+            <></>
+          )}
         </Box>
       </Box>
     </Box>

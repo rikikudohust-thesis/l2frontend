@@ -7,19 +7,19 @@ export const tokenMap = {
   },
   USDC: {
     name: "USDC",
-    address: "0x1bc8779f8bC1764Eaf7105fD51597225A410cEB3",
+    address: "0x229Ca9005ed3bbf8Dd29e8f11E4fF94252933037",
     decimals: 18,
     id: 1,
   },
   USDT: {
     name: "USDT",
-    address: "0x4421Fb4287CCB09433666AA96dF8B94d45B108A4",
+    address: "0x17b6f8C5D1818b12f8960A1808aF62bf24f6B2f5",
     decimals: 18,
     id: 2,
   },
   WBTC: {
     name: "WBTC",
-    address: "0x5f7e872767Db9086E143e9503424878d874fccBb",
+    address: "0x7591Dc38F372c3d9D17170Bb11b5BaEa522a423b",
     decimals: 18,
     id: 3,
   },
