@@ -4,10 +4,10 @@ import { providers } from "ethers";
 export const url = "http://127.0.0.1:8080"
 export const addresses = {
   sepolia: {
-    zkpaymentAddress: "0xb6C9f0CE324d7CF88E570CD1870796c6D85714dA",
+    zkpaymentAddress: "0x85f30D7589c56e0056284E190CB5a9BABbB2419e",
   },
   arbitrum: {
-    zkpaymentAddress: "0x553874ac846b5c690fe0b30fd8955bd2fd6d8cea",
+    zkpaymentAddress: "0xbA1D39C6621770fE3738A6E6D1024F58B6e2F810",
     USDC: {
       name: "USDC",
       address: "0x229Ca9005ed3bbf8Dd29e8f11E4fF94252933037",

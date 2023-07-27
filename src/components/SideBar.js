@@ -31,28 +31,12 @@ function Sidebar() {
       route: "/history",
     },
     {
-      name: "Setting",
-      route: "/setting",
+      name: "Exit",
+      route: "/exit",
     },
   ];
 
   const loggedRoutes = [
-    {
-      name: "Dashboard",
-      route: "/dashboard",
-    },
-    {
-      name: "Portfolio",
-      route: "/portfolio",
-    },
-    {
-      name: "History",
-      route: "/history",
-    },
-    {
-      name: "Setting",
-      route: "/setting",
-    },
   ];
 
   return (

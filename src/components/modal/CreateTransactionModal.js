@@ -17,6 +17,7 @@ import { tokenMap } from "src/utils/constant";
 import { signTransaction } from "src/utils/wallet";
 import axios from "axios";
 import { MetamaskContext } from "src/Router";
+import { url } from "src/common/globalCfg";
 
 const mockData = [
   {
@@ -84,13 +85,14 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
     setIsLoading(true);
     let toAccount;
     await axios
-      .get(`http://34.87.26.249:8080/v1/zkPayment/accountsEth?ethAddr=${receiver}&tokenID=${tokenMap[token].id}`)
+      .get(`${url}/v1/zkPayment/accountsEth?ethAddr=${receiver}&tokenID=${tokenMap[token].id}`)
       .then((res) => {
         toAccount = res.data.data;
       })
       .catch((e) => {
         console.log(e);
       });
+    console.log(toAccount)
     if (toAccount.length == 0) {
       setIsLoading(false);
       return;
@@ -109,7 +111,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
     console.log(tx);
 
     await axios
-      .post(`http://34.87.26.249:8080/v1/zkPayment/transactions`, {
+      .post(`${url}/v1/zkPayment/transactions`, {
         fromIdx: tx.fromAccountIndex,
         toIdx: tx.toAccountIndex,
         tokenID: tx.tokenId,

@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Portfolio from "./pages/Portfolio";
 import History from "./pages/History";
 import Setting from "./pages/Setting";
+import Exit from "./pages/Exit";
 import { createContext, useState } from "react";
 
 export const AccountContext = createContext(null);
@@ -19,21 +20,43 @@ function Router() {
   const [metamask, setMetamask] = useState(null);
   return (
     <BrowserRouter>
-      <Box minHeight="100vh" display="flex" flexDirection="row" justifyContent="center" p={2}>
+      <Box
+        minHeight="100vh"
+        display="flex"
+        flexDirection="row"
+        justifyContent="center"
+        p={2}
+      >
         <AccountContext.Provider value={{ mnemonic, setMnemonic }}>
-          <MetamaskContext.Provider value={{metamask, setMetamask}}>
+          <MetamaskContext.Provider value={{ metamask, setMetamask }}>
             <Box>
               <Sidebar />
             </Box>
             <Routes>
               <Route path="/getting-started" element={<GettingStarted />} />
               <Route path="/wallet-recovery" element={<WalletRecovery />} />
-              <Route path="/dashboard" element={<UserLayout childComponent={<Dashboard />} />} />
-              <Route path="/portfolio" element={<UserLayout childComponent={<Portfolio />} />} />
-              <Route path="/history" element={<UserLayout childComponent={<History />} />} />
-              <Route path="/setting" element={<UserLayout childComponent={<Setting />} />} />
+              <Route
+                path="/dashboard"
+                element={<UserLayout childComponent={<Dashboard />} />}
+              />
+              <Route
+                path="/portfolio"
+                element={<UserLayout childComponent={<Portfolio />} />}
+              />
+              <Route
+                path="/history"
+                element={<UserLayout childComponent={<History />} />}
+              />
+              <Route
+                path="/setting"
+                element={<UserLayout childComponent={<Setting />} />}
+              />
+              <Route
+                path="/exit"
+                element={<UserLayout childComponent={<Exit />} />}
+              />
             </Routes>
-            </MetamaskContext.Provider>
+          </MetamaskContext.Provider>
         </AccountContext.Provider>
       </Box>
     </BrowserRouter>

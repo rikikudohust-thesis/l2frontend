@@ -33,7 +33,7 @@ function Dashboard() {
 
   const mockData = [
     {
-      nameTag: "UNDEFINED",
+      nameTag: "L1 ACCOUNT",
       owner: "UNDEFINED",
       bjj: "UNDEFINED",
       balance: {
@@ -67,7 +67,8 @@ function Dashboard() {
       let balances;
       if (metamask == null) {
         // balances = await getOnChainData(null, tokens);
-        navigate("/getting-started")
+        setIsLoading(false);
+        navigate("/getting-started");
       } else {
         balances = await getOnChainData(metamask.ethAddr, tokens);
         await axios
@@ -78,7 +79,7 @@ function Dashboard() {
               setZkAccount(mockData);
             } else {
               let accounts = {
-                nameTag: "ACTIVED",
+                nameTag: "L2 ACCOUNT",
                 owner: data[0].ethAddr,
                 bjj: data[0].bjj,
                 balance: {
@@ -109,8 +110,10 @@ function Dashboard() {
 
   return (
     <Box>
-      {zkAccount.length == 0 ? (
+      {isLoading ? (
         <CircularProgress />
+      ) : zkAccount.length == 0 ? (
+        <Box>No data</Box>
       ) : (
         <Box>
           <Box
@@ -178,6 +181,7 @@ function Dashboard() {
                 <CreateDepositModal
                   balanceData={balanceData}
                   handleClose={() => setOpenModal(0)}
+                  zkAccount={zkAccount[0]}
                 />
               ) : openModal === 2 ? (
                 <CreateWithdrawModal
