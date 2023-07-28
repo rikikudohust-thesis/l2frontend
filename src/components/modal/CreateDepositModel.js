@@ -92,30 +92,6 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
   const { metamask } = useContext(MetamaskContext);
   const { mnemonic } = useContext(AccountContext);
 
-  // function getAccount(seed, ether) {
-  //   return generatePublicAndPrivateKeyStringFromMnemonic(seed, ether);
-  // }
-
-  function getBalance() {
-    return mockData.find((item) => item.address === sender).balance[token];
-  }
-
-  async function getErc20Balance(tokenAddress, userAddress) {
-    const arbitrumProvider = rpcProviders.arbitrum;
-
-    // const erc20 = new ethers.Contract(tokenAddress, ERC20ABI, arbitrumProvider)
-    // const balance = await erc20.balanceOf(userAddress);
-    // return ethers.utils.formatUnits(balance, 18)
-    console.log(tokenAnchorEl);
-    return 50;
-  }
-
-  // uint256 babyPubKey,
-  // uint48 fromIdx,
-  // uint40 loadAmountF,
-  // uint40 amountF,
-  // uint32 tokenID,
-  // uint48 toIdx
 
   async function handleDeposit() {
     const arbitrumProvider = rpcProviders.arbitrum;
