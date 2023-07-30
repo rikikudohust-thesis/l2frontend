@@ -135,7 +135,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        backgroundColor: "#111827",
+        backgroundColor: "#fefae0",
         width: "40%",
         height: "60%",
         borderRadius: "25px",
@@ -144,7 +144,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
         alignItems: "center",
       }}
     >
-      <Box
+      <Box  
         sx={{
           display: "flex",
           justifyContent: "flex-end",
@@ -154,7 +154,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
         }}
       >
         <IconButton onClick={handleClose}>
-          <CancelIcon sx={{ color: "#FFF" }} />
+          <CancelIcon sx={{ color: "#000" }} />
         </IconButton>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", paddingTop: "20px" }}>New Transaction</Box>
@@ -162,7 +162,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
         sx={{
           display: "flex",
           alignItems: "center",
-          bgcolor: "#161E2D",
+          bgcolor: "#dda15e",
           width: "80%",
           borderRadius: "15px",
           marginTop: "30px",
@@ -177,9 +177,13 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
               borderRadius: "15px",
               fontFamily: "inherit",
               color: "inherit",
-              border: "2px solid #5C80BC",
+              bgcolor: "#FEFAE0",
+              border: "2px solid #bc6c25",
               width: "100%",
               height: "50px",
+              "&:hover": {
+                bgcolor: "#FEFAE0",
+              },
             }}
             onClick={(e) => setSenderAnchorEl(e.currentTarget)}
           >
@@ -208,10 +212,10 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
           >
             <Box
               sx={{
-                border: "2px solid #5C80BC",
-                bgcolor: "#192238",
+                border: "2px solid #bc6c25",
+                bgcolor: "#fefae0",
                 borderRadius: "15px",
-                color: "#FFF",
+                color: "#000",
                 paddingX: "13px",
               }}
             >
@@ -243,7 +247,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
         sx={{
           display: "flex",
           alignItems: "center",
-          bgcolor: "#161E2D",
+          bgcolor: "#dda15e",
           width: "80%",
           borderRadius: "15px",
           marginTop: "30px",
@@ -256,17 +260,18 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
             value={receiver}
             onChange={(e) => setReceiver(e.target.value)}
             disableUnderline
-            color="#FFF"
+            color="#000"
             sx={{
               paddingLeft: "10px",
               height: "50px",
-              color: "#FFF",
+              color: "#000",
               fontFamily: "inherit",
               fontSize: "18px",
               fontWeight: "500",
-              border: "2px solid #5C80BC",
+              border: "2px solid #bc6c25",
               borderRadius: "15px",
               width: "100%",
+              bgcolor: "#FEFAE0",
             }}
           />
         </Box>
@@ -274,7 +279,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
       <Box
         sx={{
           display: "flex",
-          bgcolor: "#161E2D",
+          bgcolor: "#dda15e",
           width: "80%",
           borderRadius: "15px",
           marginTop: "30px",
@@ -289,9 +294,13 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
                 borderRadius: "15px",
                 fontFamily: "inherit",
                 color: "inherit",
-                border: "2px solid #5C80BC",
+                border: "2px solid #bc6c25",
                 width: "70%",
                 height: "50px",
+                bgcolor: "#FEFAE0",
+                "&:hover": {
+                  bgcolor: "#FEFAE0",
+                },
               }}
               onClick={(e) => setTokenAnchorEl(e.currentTarget)}
             >
@@ -320,10 +329,10 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
             >
               <Box
                 sx={{
-                  border: "2px solid #5C80BC",
-                  bgcolor: "#192238",
+                  border: "2px solid #bc6c25",
+                  bgcolor: "#FEFAE0",
                   borderRadius: "15px",
-                  color: "#FFF",
+                  color: "#000",
                   paddingX: "20px",
                 }}
               >
@@ -354,16 +363,17 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
               onChange={(e) => setAmount(e.target.value)}
               type="number"
               disableUnderline
-              color="#FFF"
+              color="#000"
               sx={{
                 paddingLeft: "10px",
                 height: "50px",
-                color: "#FFF",
+                color: "#000",
                 fontFamily: "inherit",
                 fontSize: "18px",
                 fontWeight: "500",
-                border: "2px solid #5C80BC",
+                border: "2px solid #bc6c25",
                 borderRadius: "15px",
+                bgcolor: "#FEFAE0",
                 width: "100%",
                 "& input[type=number]": {
                   "-moz-appearance": "textfield",
@@ -385,8 +395,8 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
                       fontSize: "10px",
                       fontWeight: "600",
                       textTransform: "none",
-                      color: "#FFF",
-                      border: "1px solid #5C80BC",
+                      color: "#000",
+                      border: "1px solid #bc6c25",
                       borderRadius: "10px",
                       fontFamily: "inherit",
                       marginRight: "5px",
@@ -411,8 +421,8 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
               fontSize: "15px",
               fontWeight: "600",
               textTransform: "none",
-              color: "#FFF",
-              border: "1px solid #5C80BC",
+              color: "#000",
+              border: "1px solid #bc6c25",
               borderRadius: "10px",
               fontFamily: "inherit",
             }}

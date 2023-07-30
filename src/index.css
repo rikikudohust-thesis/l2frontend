@@ -3,8 +3,8 @@ body {
   font-family: "Lexend Exa";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0F141E;
-  color: #FFF;
+  background-color: #faedcd;
+  color: #000;
   overflow-y: scroll;
 }
 

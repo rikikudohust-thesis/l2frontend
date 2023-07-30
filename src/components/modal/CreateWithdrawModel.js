@@ -136,7 +136,7 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        backgroundColor: "#111827",
+        backgroundColor: "#FEFAE0",
         width: "40%",
         height: "40%",
         borderRadius: "25px",
@@ -155,7 +155,7 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
         }}
       >
         <IconButton onClick={handleClose}>
-          <CancelIcon sx={{ color: "#FFF" }} />
+          <CancelIcon sx={{ color: "#000" }} />
         </IconButton>
       </Box>
       <Box
@@ -166,7 +166,7 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
       <Box
         sx={{
           display: "flex",
-          bgcolor: "#161E2D",
+          bgcolor: "#DDA15E",
           width: "80%",
           borderRadius: "15px",
           marginTop: "30px",
@@ -181,9 +181,13 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
                 borderRadius: "15px",
                 fontFamily: "inherit",
                 color: "inherit",
-                border: "2px solid #5C80BC",
+                border: "2px solid #BC6C25",
                 width: "70%",
                 height: "50px",
+                bgcolor: "#FEFAE0",
+                "&:hover": {
+                  bgcolor: "#FEFAE0",
+                },
               }}
               onClick={(e) => setTokenAnchorEl(e.currentTarget)}
             >
@@ -212,10 +216,10 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
             >
               <Box
                 sx={{
-                  border: "2px solid #5C80BC",
-                  bgcolor: "#192238",
+                  border: "2px solid #BC6C25",
+                  bgcolor: "#FEFAE0",
                   borderRadius: "15px",
-                  color: "#FFF",
+                  color: "#000",
                   paddingX: "20px",
                 }}
               >
@@ -253,15 +257,16 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
               onChange={(e) => setAmount(e.target.value)}
               type="number"
               disableUnderline
-              color="#FFF"
+              color="#000"
               sx={{
                 paddingLeft: "10px",
                 height: "50px",
-                color: "#FFF",
+                color: "#000",
                 fontFamily: "inherit",
+                bgcolor: "#FEFAE0",
                 fontSize: "18px",
                 fontWeight: "500",
-                border: "2px solid #5C80BC",
+                border: "2px solid #BC6C25",
                 borderRadius: "15px",
                 width: "100%",
                 "& input[type=number]": {
@@ -284,8 +289,8 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
                       fontSize: "10px",
                       fontWeight: "600",
                       textTransform: "none",
-                      color: "#FFF",
-                      border: "1px solid #5C80BC",
+                      color: "#000",
+                      border: "1px solid #BC6C25",
                       borderRadius: "10px",
                       fontFamily: "inherit",
                       marginRight: "5px",
@@ -307,15 +312,16 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
             fontSize: "15px",
             fontWeight: "600",
             textTransform: "none",
-            color: "#FFF",
-            border: "1px solid #5C80BC",
+            color: "#000",
+            
+            border: "1px solid #BC6C25",
             borderRadius: "10px",
             fontFamily: "inherit",
           }}
           onClick={async () => await handleWithdraw()}
         >
           {isLoading ? (
-            <CircularProgress sx={{ color: "#FFF", fontSize: "inherit" }} />
+            <CircularProgress sx={{ color: "#000", fontSize: "inherit" }} />
           ) : (
             "Withdraw"
           )}

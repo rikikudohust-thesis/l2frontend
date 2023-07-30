@@ -63,7 +63,7 @@ function Sidebar() {
               md: "110px",
               lg: "300px",
             },
-            backgroundColor: "#111827",
+            backgroundColor: "#DDA15E",
             boxSizing: "border-box",
             border: "none",
           },
@@ -78,7 +78,7 @@ function Sidebar() {
             justifyContent: "center",
             py: 3,
             paddingBottom: "15vh",
-            color: "#FFF",
+            color: "#000",
           }}
         >
           ZKPayment
@@ -98,10 +98,10 @@ function Sidebar() {
                         textTransform: "none",
                         width: "100%",
                         paddingBottom: "10px",
-                        color: `${location.pathname === item.route ? "#70BDD6" : "#FFF"}`,
+                        color: `${location.pathname === item.route ? "#606C38" : "#000"}`,
                         borderRight: `
                          4px
-                       solid  ${location.pathname === item.route ? "#009DDC" : "transparent"}`,
+                       solid  ${location.pathname === item.route ? "#f2c57c" : "transparent"}`,
                         borderRadius: "0px",
                       }}
                     >
@@ -120,10 +120,10 @@ function Sidebar() {
                         textTransform: "none",
                         width: "100%",
                         paddingBottom: "10px",
-                        color: `${location.pathname === item.route ? "#70BDD6" : "#FFF"}`,
+                        color: `${location.pathname === item.route ? "#606C38" : "#000"}`,
                         borderRight: `
                          4px
-                       solid  ${location.pathname === item.route ? "#009DDC" : "transparent"}`,
+                       solid  ${location.pathname === item.route ? "#f2c57c" : "transparent"}`,
                         borderRadius: "0px",
                       }}
                     >
@@ -143,10 +143,10 @@ function Sidebar() {
                       textTransform: "none",
                       width: "100%",
                       paddingBottom: "10px",
-                      color: `${location.pathname === item.route ? "#70BDD6" : "#FFF"}`,
+                      color: `${location.pathname === item.route ? "#606C38" : "#000"}`,
                       borderRight: `
                          4px
-                       solid  ${location.pathname === item.route ? "#70BDD6" : "transparent"}`,
+                       solid  ${location.pathname === item.route ? "#f2c57c" : "transparent"}`,
                       borderRadius: "0px",
                     }}
                   >

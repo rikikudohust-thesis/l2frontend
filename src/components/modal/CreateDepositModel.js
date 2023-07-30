@@ -92,7 +92,6 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
   const { metamask } = useContext(MetamaskContext);
   const { mnemonic } = useContext(AccountContext);
 
-
   async function handleDeposit() {
     const arbitrumProvider = rpcProviders.arbitrum;
     const zkpayment = new ethers.Contract(
@@ -220,7 +219,7 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        backgroundColor: "#111827",
+        backgroundColor: "#fefae0",
         width: "40%",
         height: "60%",
         borderRadius: "25px",
@@ -239,7 +238,7 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
         }}
       >
         <IconButton onClick={handleClose}>
-          <CancelIcon sx={{ color: "#FFF" }} />
+          <CancelIcon sx={{ color: "#000" }} />
         </IconButton>
       </Box>
       <Box
@@ -252,7 +251,7 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
         sx={{
           display: "flex",
           alignItems: "center",
-          bgcolor: "#161E2D",
+          bgcolor: "#dda15e",
           width: "80%",
           borderRadius: "15px",
           marginTop: "30px",
@@ -267,9 +266,13 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
               borderRadius: "15px",
               fontFamily: "inherit",
               color: "inherit",
-              border: "2px solid #5C80BC",
+              bgcolor: "#fefae0",
+              border: "2px solid #bc6c25",
               width: "100%",
               height: "50px",
+              "&:hover": {
+                bgcolor: "#fefae0",
+              },
             }}
             onClick={(e) => setSenderAnchorEl(e.currentTarget)}
           >
@@ -298,10 +301,10 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
           >
             <Box
               sx={{
-                border: "2px solid #5C80BC",
-                bgcolor: "#192238",
+                border: "2px solid #bc6c25",
+                bgcolor: "#fefae0",
                 borderRadius: "15px",
-                color: "#FFF",
+                color: "#000",
                 paddingX: "13px",
               }}
             >
@@ -339,7 +342,7 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
         sx={{
           display: "flex",
           alignItems: "center",
-          bgcolor: "#161E2D",
+          bgcolor: "#dda15e",
           width: "80%",
           borderRadius: "15px",
           marginTop: "30px",
@@ -354,9 +357,13 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
               borderRadius: "15px",
               fontFamily: "inherit",
               color: "inherit",
-              border: "2px solid #5C80BC",
+              border: "2px solid #bc6c25",
+              bgcolor: "#fefae0",
               width: "100%",
               height: "50px",
+              "&:hover": {
+                bgcolor: "#fefae0",
+              },
             }}
             onClick={(e) => setSenderAnchorEl(e.currentTarget)}
           >
@@ -387,10 +394,10 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
           >
             <Box
               sx={{
-                border: "2px solid #5C80BC",
-                bgcolor: "#192238",
+                border: "2px solid #bc6c25",
+                bgcolor: "#FEFAE0",
                 borderRadius: "15px",
-                color: "#FFF",
+                color: "#000",
                 paddingX: "13px",
               }}
             >
@@ -427,7 +434,7 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
       <Box
         sx={{
           display: "flex",
-          bgcolor: "#161E2D",
+          bgcolor: "#dda15e",
           width: "80%",
           borderRadius: "15px",
           marginTop: "30px",
@@ -442,9 +449,13 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
                 borderRadius: "15px",
                 fontFamily: "inherit",
                 color: "inherit",
-                border: "2px solid #5C80BC",
+                bgcolor: "#FEFAE0",
+                border: "2px solid #bc6c25",
                 width: "70%",
                 height: "50px",
+                "&:hover": {
+                  bgcolor: "#fefae0",
+                },
               }}
               onClick={(e) => {
                 setTokenAnchorEl(e.currentTarget);
@@ -475,10 +486,10 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
             >
               <Box
                 sx={{
-                  border: "2px solid #5C80BC",
-                  bgcolor: "#192238",
+                  border: "2px solid #bc6c25",
+                  bgcolor: "#FEFAE0",
                   borderRadius: "15px",
-                  color: "#FFF",
+                  color: "#000",
                   paddingX: "20px",
                 }}
               >
@@ -525,16 +536,17 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
               }}
               type="number"
               disableUnderline
-              color="#FFF"
+              color="#000"
               sx={{
                 paddingLeft: "10px",
                 height: "50px",
-                color: "#FFF",
+                color: "#000",
                 fontFamily: "inherit",
                 fontSize: "18px",
                 fontWeight: "500",
-                border: "2px solid #5C80BC",
+                border: "2px solid #bc6c25",
                 borderRadius: "15px",
+                bgcolor: "#fefae0",
                 width: "100%",
                 "& input[type=number]": {
                   "-moz-appearance": "textfield",
@@ -556,8 +568,8 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
                       fontSize: "10px",
                       fontWeight: "600",
                       textTransform: "none",
-                      color: "#FFF",
-                      border: "1px solid #5C80BC",
+                      color: "#000",
+                      border: "1px solid #bc6c25",
                       borderRadius: "10px",
                       fontFamily: "inherit",
                       marginRight: "5px",
@@ -589,8 +601,8 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
             fontSize: "15px",
             fontWeight: "600",
             textTransform: "none",
-            color: "#FFF",
-            border: "1px solid #5C80BC",
+            color: "#000",
+            border: "1px solid #bc6c25",
             borderRadius: "10px",
             fontFamily: "inherit",
           }}
@@ -598,13 +610,13 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
         >
           {/* Finish */}
           {isLoading ? (
-            <CircularProgress sx={{ color: "#FFF", fontSize: "inherit" }} />
+            <CircularProgress sx={{ color: "#000", fontSize: "inherit" }} />
           ) : !balanceData[token] ? (
             "Not Active"
           ) : balanceData[token].isApprove ? (
             "Deposit"
           ) : (
-            "Approve & Deposit"
+            "Deposit"
           )}
         </Button>
       </Box>

@@ -65,13 +65,13 @@ function WalletRecovery() {
               <Button
                 sx={{
                   borderRadius: "25px",
-                  border: "2px solid #FFF",
+                  border: "2px solid #000",
                   padding: "10px",
                   paddingX: "24px",
                   margin: 0,
                   textTransform: "none",
                   fontFamily: "inherit",
-                  color: "#FFF",
+                  color: "#000",
                   width: "100%",
                 }}
                 onClick={() => {
