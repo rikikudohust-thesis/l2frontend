@@ -9,7 +9,7 @@ import {
   Stepper,
   Step,
   StepLabel,
-  Input,
+  Input,  
   Slide,
   Grid,
   Button,
@@ -87,7 +87,7 @@ function CreateWallet() {
                 {steps.map((label) => (
                   <Step key={label}>
                     <StepLabel>
-                      <Box sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                      <Box sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                         {label}
                       </Box>
                     </StepLabel>
@@ -116,15 +116,15 @@ function CreateWallet() {
                       onChange={(e) => setPassword(e.target.value)}
                       type="password"
                       disableUnderline
-                      color="#FFF"
+                      color="#000"
                       sx={{
                         paddingLeft: "20px",
                         height: "50px",
-                        color: "#FFF",
+                        color: "#000",
                         fontFamily: "inherit",
                         fontSize: "18px",
                         fontWeight: "500",
-                        border: "2px solid #FFF",
+                        border: "2px solid #000",
                         borderRadius: "15px",
                         width: "60%",
                       }}
@@ -144,15 +144,15 @@ function CreateWallet() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       type="password"
                       disableUnderline
-                      color="#FFF"
+                      color="#000"
                       sx={{
                         paddingLeft: "20px",
                         height: "50px",
-                        color: "#FFF",
+                        color: "#000",
                         fontFamily: "inherit",
                         fontSize: "18px",
                         fontWeight: "500",
-                        border: "2px solid #FFF",
+                        border: "2px solid #000",
                         borderRadius: "15px",
                         width: "60%",
                       }}
@@ -176,7 +176,7 @@ function CreateWallet() {
                           sx={{
                             display: "flex",
                             justifyContent: "center",
-                            border: "1px solid #fff",
+                            border: "1px solid #000",
                             paddingY: "10px",
                             borderRadius: "10px",
                           }}
@@ -218,15 +218,15 @@ function CreateWallet() {
                               )
                             }
                             disableUnderline
-                            color="#FFF"
+                            color="#000"
                             sx={{
                               paddingLeft: "20px",
                               height: "50px",
-                              color: "#FFF",
+                              color: "#000",
                               fontFamily: "inherit",
                               fontSize: "18px",
                               fontWeight: "500",
-                              border: "2px solid #FFF",
+                              border: "2px solid #000",
                               borderRadius: "15px",
                               width: "80%",
                             }}
@@ -248,13 +248,13 @@ function CreateWallet() {
               <Button
                 sx={{
                   borderRadius: "15px",
-                  border: "1px solid #FFF",
+                  border: "1px solid #000",
                   padding: "10px",
                   paddingX: "24px",
                   margin: 0,
                   textTransform: "none",
                   fontFamily: "inherit",
-                  color: "#FFF",
+                  color: "#000",
                 }}
                 onClick={() => setCurrentStep(currentStep - 1)}
               >
@@ -264,13 +264,13 @@ function CreateWallet() {
                 <Button
                   sx={{
                     borderRadius: "15px",
-                    border: "1px solid #FFF",
+                    border: "1px solid #000",
                     padding: "10px",
                     paddingX: "24px",
                     margin: 0,
                     textTransform: "none",
                     fontFamily: "inherit",
-                    color: "#FFF",
+                    color: "#000",
                   }}
                   onClick={() => {
                     switch (currentStep) {
