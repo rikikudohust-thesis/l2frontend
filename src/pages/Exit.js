@@ -117,32 +117,41 @@ function Exit() {
   }, [metamask]);
 
   return (
-    <Box display="flex" flexDirection="column">
-      <Box color="#FFF">
+    <Box
+      display="flex"
+      flexDirection="column"
+      bgcolor="#FEFAE0"
+      sx={{
+        borderRadius: "15px",
+        paddingX: "4%",
+        paddingY: "2%",
+      }}
+    >
+      <Box color="#000">
         <Table>
           <TableHead>
             <TableRow>
               <TableCell
                 align="left"
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 ID
               </TableCell>
               <TableCell
                 align="left"
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 ETHEREUM ADDRESS
               </TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+              <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                 AMOUNT
               </TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+              <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                 TOKEN
               </TableCell>
               <TableCell
                 colSpan={2}
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 NUM EXIT ROOT
               </TableCell>
@@ -156,25 +165,25 @@ function Exit() {
                 <TableRow hover>
                   <TableCell
                     align="left"
-                    sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                    sx={{ color: "#000", fontFamily: "Lexend Exa" }}
                   >
                     {row.idx}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {truncateString(metamask.ethAddr, 20)}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {ethers.utils.formatUnits(row.amount, 18).toString()}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {tokenEnum[row.tokenID]}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {row.numExitRoot}
                   </TableCell>
                   <TableCell
                     colSpan={2}
-                    sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                    sx={{ color: "#000", fontFamily: "Lexend Exa" }}
                   >
                     <Button
                       variant="outlined"

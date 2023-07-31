@@ -30,7 +30,7 @@ function Account({ nameTag, owner, address, balance }) {
         flexDirection: "column",
         justifyContent: "flex-start",
         borderRadius: "15px",
-        bgcolor: "#192238",
+        bgcolor: "#fefae0",
         marginBottom: "3%",
         paddingX: "4%",
         paddingY: "2%",
@@ -38,7 +38,7 @@ function Account({ nameTag, owner, address, balance }) {
     >
       <Box
         width={`${nameTag.length * 12}px`}
-        border="1px solid #FFF"
+        border="1px solid #bc6c25"
         borderRadius="10px"
         display="flex"
         justifyContent="center"
@@ -50,7 +50,7 @@ function Account({ nameTag, owner, address, balance }) {
       <Box my={1}>
         Owner: {owner}
         <IconButton
-          sx={{ color: "#FFF", fontSize: "15px" }}
+          sx={{ color: "#000", fontSize: "15px" }}
           onClick={() => navigator.clipboard.writeText(owner)}
         >
           <ContentCopyIcon fontSize="inherit" />
@@ -59,7 +59,7 @@ function Account({ nameTag, owner, address, balance }) {
       <Box my={1}>
         L2 Address: {address}
         <IconButton
-          sx={{ color: "#FFF", fontSize: "15px" }}
+          sx={{ color: "#000", fontSize: "15px" }}
           onClick={() => navigator.clipboard.writeText(owner)}
         >
           <ContentCopyIcon fontSize="inherit" />
@@ -71,7 +71,7 @@ function Account({ nameTag, owner, address, balance }) {
           sx={{
             width: "90px",
             color: "inherit",
-            border: "2px solid #5C80BC",
+            border: "2px solid #bc6c25",
             borderRadius: "10px",
             marginLeft: "10px",
             paddingX: "10px",
@@ -101,10 +101,10 @@ function Account({ nameTag, owner, address, balance }) {
         >
           <Box
             sx={{
-              border: "2px solid #5C80BC",
-              bgcolor: "#192238",
+              border: "2px solid #bc6c25",
+              bgcolor: "#fefae0",
               borderRadius: "10px",
-              color: "#FFF",
+              color: "#000",
               paddingX: "3px",
             }}
           >

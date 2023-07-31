@@ -122,7 +122,16 @@ function History() {
   ];
 
   return (
-    <Box display="flex" flexDirection="column">
+    <Box
+      display="flex"
+      flexDirection="column"
+      bgcolor="#FEFAE0"
+      sx={{
+        borderRadius: "15px",
+        paddingX: "4%",
+        paddingY: "2%",
+      }}
+    >
       <Box display="flex" alignItems="center">
         <Box pr={2}>Account: </Box>
         <Button
@@ -131,7 +140,7 @@ function History() {
             borderRadius: "15px",
             fontFamily: "inherit",
             color: "inherit",
-            border: "2px solid #5C80BC",
+            border: "2px solid #DDA15E",
             width: "500px",
             height: "45px",
           }}
@@ -164,10 +173,10 @@ function History() {
             sx={{
               display: "flex",
               justifyContent: "center",
-              border: "2px solid #5C80BC",
-              bgcolor: "#192238",
+              border: "2px solid #BC6C25",
+              bgcolor: "#FEFAE0",
               borderRadius: "15px",
-              color: "#FFF",
+              color: "#000",
               width: "500px",
             }}
           >
@@ -198,56 +207,56 @@ function History() {
           </Box>
         </Popover>
       </Box>
-      <Box color="#FFF">
+      <Box color="#000">
         <Table>
           <TableHead>
             <TableRow>
               <TableCell
                 align="left"
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 TxHash
               </TableCell>
               <TableCell
                 align="left"
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 State
               </TableCell>
               <TableCell
                 // align="left"
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 Type
               </TableCell>
               <TableCell
                 // align="left"
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 TxType
               </TableCell>
               <TableCell
                 // align="left"
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 Sender
               </TableCell>
               <TableCell
                 // align="left"
-                sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                sx={{ color: "#000", fontFamily: "Lexend Exa" }}
               >
                 Receiver
               </TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+              <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                 L1Amount
               </TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+              <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                 Amount
               </TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+              <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                 Token
               </TableCell>
-              <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+              <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                 Batch
               </TableCell>
             </TableRow>
@@ -260,43 +269,43 @@ function History() {
                 <TableRow hover>
                   <TableCell
                     align="left"
-                    sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}
+                    sx={{ color: "#000", fontFamily: "Lexend Exa" }}
                   >
                     {truncateString(tx.txHash, 30)}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {tx.state
                       ? stateTx[tx.state]
                       : tx.l1Batch != 0
                       ? "CONFIRMED"
                       : "PENDING"}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {tx.type ? "L1" : "L2"}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {tx.txType}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {tx.sender != "0x0000000000000000000000000000000000000000"
                       ? truncateString(tx.sender, 20)
                       : truncateString(tx.fromEthAddr, 20)}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {truncateString(tx.receiver, 20)}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {tx.depositAmount
                       ? ethers.utils.formatUnits(tx.depositAmount, 18)
                       : 0}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {ethers.utils.formatUnits(tx.amount, 18).toString()}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {tokenEnum[tx.token]}
                   </TableCell>
-                  <TableCell sx={{ color: "#FFF", fontFamily: "Lexend Exa" }}>
+                  <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {tx.batch}
                   </TableCell>
                 </TableRow>

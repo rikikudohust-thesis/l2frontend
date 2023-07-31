@@ -120,18 +120,16 @@ function UserLayout({ childComponent }) {
   return (
     <Box px={4} pt={1} width="100%" display="flex" flexDirection="column">
       <Box display="flex" justifyContent="flex-end">
-        <Box display="flex" justifyContent="center" p={1} mr={2} border="1px solid #FFF" borderRadius="10px">
-          <LocalGasStationRoundedIcon /> 0.01$
-        </Box>
         <Box>
           <Button
             sx={{
               height: "100%",
               width: "140px",
-              border: "2px solid #5C80BC",
+              border: "2px solid #bc6c25",
+              bgcolor: "#FEFAE0",
               borderRadius: "10px",
               textTransform: "none",
-              color: "#FFF",
+              color: "#000",
               paddingX: "10px",
               fontFamily: "inherit",
             }}
@@ -160,10 +158,10 @@ function UserLayout({ childComponent }) {
           >
             <Box
               sx={{
-                border: "2px solid #5C80BC",
-                bgcolor: "#192238",
+                border: "2px solid #bc6c25",
+                bgcolor: "#FEFAE0",
                 borderRadius: "10px",
-                color: "#FFF",
+                color: "#000",
                 width: "136px",
                 display: "flex",
                 justifyContent: "center",
@@ -187,10 +185,11 @@ function UserLayout({ childComponent }) {
             sx={{
               height: "100%",
               width: "140px",
-              border: "2px solid #5C80BC",
+              border: "2px solid #bc6c25",
+              bgcolor: "#FEFAE0",
               borderRadius: "10px",
               textTransform: "none",
-              color: "#FFF",
+              color: "#000",
               paddingX: "10px",
               fontFamily: "inherit",
             }}
@@ -201,7 +200,7 @@ function UserLayout({ childComponent }) {
         </Box>
       </Box>
 
-      <Box p={4} borderRadius="15px" bgcolor="#111827" sx={{ marginTop: "100px" }}>
+      <Box p={4} borderRadius="15px" bgcolor="#dda15e" sx={{ marginTop: "100px" }}>
         {childComponent}
       </Box>
     </Box>

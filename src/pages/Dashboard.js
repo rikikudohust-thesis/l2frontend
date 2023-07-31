@@ -126,14 +126,14 @@ function Dashboard() {
             <Box display="flex" justifyContent="space-between" width="31%">
               <Button
                 sx={{
-                  bgcolor: "#416CB8",
+                  bgcolor: "#faedcd",
                   padding: "10px",
                   borderRadius: "10px",
                   textTransform: "none",
                   fontFamily: "inherit",
                   color: "inherit",
                   "&:hover": {
-                    bgcolor: "#416CB8",
+                    bgcolor: "#faedcd",
                   },
                 }}
                 onClick={handleNewDeposit}
@@ -143,14 +143,14 @@ function Dashboard() {
               </Button>
               <Button
                 sx={{
-                  bgcolor: "#416CB8",
+                  bgcolor: "#faedcd",
                   padding: "10px",
                   borderRadius: "10px",
                   textTransform: "none",
                   fontFamily: "inherit",
                   color: "inherit",
                   "&:hover": {
-                    bgcolor: "#416CB8",
+                    bgcolor: "#faedcd",
                   },
                 }}
                 onClick={handleNewTx}
@@ -160,14 +160,14 @@ function Dashboard() {
               </Button>
               <Button
                 sx={{
-                  bgcolor: "#416CB8",
+                  bgcolor: "#faedcd",
                   padding: "10px",
                   borderRadius: "10px",
                   textTransform: "none",
                   fontFamily: "inherit",
                   color: "inherit",
                   "&:hover": {
-                    bgcolor: "#416CB8",
+                    bgcolor: "#faedcd",
                   },
                 }}
                 onClick={handleNewWithdraw}

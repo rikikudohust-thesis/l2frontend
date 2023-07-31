@@ -62,15 +62,15 @@ function GettingStarted() {
                 onChange={(e) => setLoginPassword(e.target.value)}
                 type="password"
                 disableUnderline
-                color="#FFF"
+                color="#000"
                 sx={{
                   paddingLeft: "20px",
                   height: "50px",
-                  color: "#FFF",
+                  color: "#000",
                   fontFamily: "inherit",
                   fontSize: "18px",
                   fontWeight: "500",
-                  border: "2px solid #FFF",
+                  border: "2px solid #000",
                   borderRadius: "25px",
                   width: "100%",
                 }}
@@ -79,13 +79,13 @@ function GettingStarted() {
                     <Button
                       sx={{
                         borderRadius: "25px",
-                        border: "2px solid #FFF",
+                        border: "2px solid #000",
                         padding: "10px",
                         paddingX: "24px",
                         margin: 0,
                         textTransform: "none",
                         fontFamily: "inherit",
-                        color: "#FFF",
+                        color: "#000",
                       }}
                       onClick={() => handleLogin(loginPassword)}
                     >
@@ -99,7 +99,7 @@ function GettingStarted() {
               children={<Paper />}
               my={5}
               sx={{
-                background: "#FFF",
+                background: "#000",
                 height: "2px",
                 width: "500px",
               }}
@@ -109,13 +109,13 @@ function GettingStarted() {
               <Button
                 sx={{
                   borderRadius: "25px",
-                  border: "2px solid #FFF",
+                  border: "2px solid #000",
                   padding: "10px",
                   paddingX: "24px",
                   margin: 0,
                   textTransform: "none",
                   fontFamily: "inherit",
-                  color: "#FFF",
+                  color: "#000",
                   width: "100%",
                 }}
                 onClick={() => {
