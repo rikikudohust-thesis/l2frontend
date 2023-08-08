@@ -16,7 +16,7 @@ import { ethers } from "ethers";
 import { tokenMap } from "src/utils/constant";
 import { signTransaction } from "src/utils/wallet";
 import axios from "axios";
-import { MetamaskContext } from "src/Router";
+import { MetamaskContext , EddsaAccountContext} from "src/Router";
 import { url } from "src/common/globalCfg";
 
 const mockData = [
@@ -74,6 +74,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
   const [receiver, setReceiver] = useState("");
   const [amount, setAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const { eddsaAccount } = useContext(EddsaAccountContext);
 
   const { metamask } = useContext(MetamaskContext);
 
@@ -107,7 +108,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
       nonce: zkAccount.balance[token].nonce,
       toAccountIndex: to.idx,
     };
-    const tx = signTransaction(body, body, metamask.privateKey);
+    const tx = signTransaction(body, body, eddsaAccount.privateKey);
     console.log(tx);
 
     await axios

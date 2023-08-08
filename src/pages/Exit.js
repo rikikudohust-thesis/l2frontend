@@ -15,12 +15,13 @@ import {
 import { useContext, useEffect, useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useNavigate } from "react-router-dom";
-import { MetamaskContext } from "src/Router";
+import { MetamaskContext, EddsaAccountContext } from "src/Router";
 import { ethers } from "ethers";
 import { url, addresses as addrs, rpcProviders } from "src/common/globalCfg";
 import ZKPAYMENTABI from "../common/abis/zkpayment.json";
 // import { tokenMap } from "src/utils/constant";
 import { stateTx, tokenEnum } from "src/utils/constant";
+import { signWithdraw } from "src/utils/permit";
 const addresses = [
   "0xcB714F263cBc742A79745faf2B2c47367460D26A",
   "0x990b82dc8ab6134f482d2cad3bba11c537cd7b45",
@@ -43,6 +44,7 @@ function Exit() {
   const [isLoadingTx, setIsLoadingTx] = useState(false);
   const [ethPrice, setETHPrice] = useState(0);
   const { metamask } = useContext(MetamaskContext);
+  const { eddsaAccount } = useContext(EddsaAccountContext);
 
   const navigate = useNavigate();
   const handleClick = (event) => {
@@ -60,24 +62,34 @@ function Exit() {
       ZKPAYMENTABI,
       arbitrumProvider
     );
-    console.log(metamask);
+    const signers = new ethers.Wallet(
+      eddsaAccount.privateKey,
+      arbitrumProvider
+    );
+    const signature = await signWithdraw(
+      signers,
+      "0x" + eddsaAccount.publicKeyCompressedHex,
+      metamask,
+      zkpayment.address
+    );
 
     const txData = await zkpayment.populateTransaction
       .withdrawMerkleProof(
         exit.tokenID,
         exit.amount,
         // "0x" + exit.bjj,
-        "0x" + metamask.publicKeyCompressedHex.toString(),
+        "0x" + eddsaAccount.publicKeyCompressedHex.toString(),
         exit.numExitRoot,
         exit.siblings,
         exit.idx,
-        exit.instantWithdraw
+        exit.instantWithdraw,
+        signature
       )
       .then((tx) => tx.data);
 
     const params = [
       {
-        from: metamask.ethAddr,
+        from: metamask,
         to: addrs.arbitrum.zkpaymentAddress,
         value: 0,
         data: txData,
@@ -96,13 +108,13 @@ function Exit() {
   useEffect(() => {
     async function getExitData() {
       setIsLoading(true);
-      if (metamask == null) {
+      if (eddsaAccount == null) {
         setIsLoading(false);
         navigate("/getting-started");
       }
       try {
         await axios
-          .get(`${url}/v1/zkPayment/exit?ethAddr=${metamask.ethAddr}`)
+          .get(`${url}/v1/zkPayment/exit?ethAddr=${eddsaAccount.zkEthAddr}`)
           .then((res) => {
             if (res.data.data != null) {
               setExitData(res.data.data);
@@ -114,7 +126,7 @@ function Exit() {
       setIsLoading(false);
     }
     getExitData();
-  }, [metamask]);
+  }, [eddsaAccount]);
 
   return (
     <Box
@@ -170,7 +182,7 @@ function Exit() {
                     {row.idx}
                   </TableCell>
                   <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
-                    {truncateString(metamask.ethAddr, 20)}
+                    {truncateString(eddsaAccount.zkEthAddr, 20)}
                   </TableCell>
                   <TableCell sx={{ color: "#000", fontFamily: "Lexend Exa" }}>
                     {ethers.utils.formatUnits(row.amount, 18).toString()}

@@ -18,7 +18,8 @@ import ZKPAYMENTABI from "../../common/abis/zkpayment.json";
 import ERC20ABI from "../../common/abis/erc20.json";
 import { fix2Float } from "src/utils/float40";
 import { tokenMap } from "src/utils/constant";
-import { MetamaskContext } from "src/Router";
+import { MetamaskContext, EddsaAccountContext } from "src/Router";
+import { signTx } from "src/utils/permit";
 
 const mockData = [
   {
@@ -83,6 +84,7 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { metamask } = useContext(MetamaskContext);
+  const { eddsaAccount } = useContext(EddsaAccountContext);
 
   function getBalance() {
     return ethers.utils.formatUnits(zkAccount.balance[token].value, 18);
@@ -96,6 +98,17 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
       ZKPAYMENTABI,
       arbitrumProvider
     );
+    const signers = new ethers.Wallet(
+      eddsaAccount.privateKey,
+      arbitrumProvider
+    );
+    const signature = await signTx(
+      signers,
+      1,
+      metamask,
+      zkpayment.address
+    );
+    console.log("here")
 
     const txData = await zkpayment.populateTransaction
       .addL1Transaction(
@@ -104,15 +117,14 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
         loadAmountF0,
         fix2Float(ethers.utils.parseUnits(amount, tokenMap[token].decimals)),
         tokenMap[token].id,
-        1
+        1,
+        signature
       )
       .then((tx) => tx.data);
 
-    // const txData = await zkpayment.functions;
-    console.log("here");
     const params = [
       {
-        from: metamask.ethAddr,
+        from: metamask,
         to: addresses.arbitrum.zkpaymentAddress,
         value: 0,
         data: txData,
@@ -313,7 +325,7 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
             fontWeight: "600",
             textTransform: "none",
             color: "#000",
-            
+
             border: "1px solid #BC6C25",
             borderRadius: "10px",
             fontFamily: "inherit",

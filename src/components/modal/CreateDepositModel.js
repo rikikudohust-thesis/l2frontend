@@ -12,7 +12,11 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useContext, useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { AccountContext, MetamaskContext } from "src/Router";
+import {
+  AccountContext,
+  MetamaskContext,
+  EddsaAccountContext,
+} from "src/Router";
 // import { approveERC20, generatePublicAndPrivateKeyStringFromMnemonic } from "src/utils/wallet";
 import { tokenMap } from "src/utils/constant";
 
@@ -22,6 +26,7 @@ import ERC20ABI from "../../common/abis/erc20.json";
 import { addresses, rpcProviders } from "src/common/globalCfg";
 import { ethers } from "ethers";
 import { fix2Float } from "src/utils/float40";
+import { signCreateAccountAuthorization, signWithdraw } from "src/utils/permit";
 
 function BNToNumber(value, decimals) {
   return ethers.utils.formatUnits(value, decimals);
@@ -90,7 +95,7 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
   const [amount, setAmount] = useState(0);
 
   const { metamask } = useContext(MetamaskContext);
-  const { mnemonic } = useContext(AccountContext);
+  const { eddsaAccount } = useContext(EddsaAccountContext);
 
   async function handleDeposit() {
     const arbitrumProvider = rpcProviders.arbitrum;
@@ -99,20 +104,31 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
       ZKPAYMENTABI,
       arbitrumProvider
     );
+    const signers = new ethers.Wallet(
+      eddsaAccount.privateKey,
+      arbitrumProvider
+    );
+    const signature = await signCreateAccountAuthorization(
+      signers,
+      "0x" + eddsaAccount.publicKeyCompressedHex,
+      zkpayment.address
+    );
+
     const txData = await zkpayment.populateTransaction
       .addL1Transaction(
-        babyjub0,
+        "0x" + eddsaAccount.publicKeyCompressedHex,
         zkAccount.balance[token].idx,
         fix2Float(ethers.utils.parseUnits(amount, tokenMap[token].decimals)),
         amountF0,
         tokenMap[token].id,
-        toIdx0
+        toIdx0,
+        signature
       )
       .then((tx) => tx.data);
 
     const params = [
       {
-        from: metamask.ethAddr,
+        from: metamask,
         to: addresses.arbitrum.zkpaymentAddress,
         value: 0,
         data: txData,
@@ -136,20 +152,31 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
       ZKPAYMENTABI,
       arbitrumProvider
     );
+    const signers = new ethers.Wallet(
+      eddsaAccount.privateKey,
+      arbitrumProvider
+    );
+    const signature = await signCreateAccountAuthorization(
+      signers,
+      "0x" + eddsaAccount.publicKeyCompressedHex,
+      zkpayment.address
+    );
+
     const txData = await zkpayment.populateTransaction
       .addL1Transaction(
-        metamask.publicKeyCompressed,
+        "0x" + eddsaAccount.publicKeyCompressedHex,
         0,
         fix2Float(ethers.utils.parseUnits(amount, tokenMap[token].decimals)),
         0,
         tokenMap[token].id,
-        0
+        0,
+        signature
       )
       .then((tx) => tx.data);
 
     const params = [
       {
-        from: metamask.ethAddr,
+        from: metamask,
         to: addresses.arbitrum.zkpaymentAddress,
         value: 0,
         data: txData,
@@ -184,7 +211,7 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
     console.log(txData);
     const params = [
       {
-        from: metamask.ethAddr,
+        from: metamask,
         to: tokenMap[token].address,
         value: 0,
         data: txData,
@@ -276,7 +303,9 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
             }}
             onClick={(e) => setSenderAnchorEl(e.currentTarget)}
           >
-            <Box width="95%">{metamask ? metamask.ethAddr : "undefined"}</Box>
+            <Box width="95%">
+              {eddsaAccount ? eddsaAccount.zkEthAddr : "undefined"}
+            </Box>
             <Box width="5%" display="flex" alignItems="center">
               <KeyboardArrowRightIcon />
             </Box>
@@ -368,7 +397,9 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
             onClick={(e) => setSenderAnchorEl(e.currentTarget)}
           >
             <Box width="95%">
-              {metamask ? metamask.publicKeyCompressedHex : "undefined"}
+              {eddsaAccount
+                ? "0x" + eddsaAccount.publicKeyCompressedHex
+                : "undefined"}
             </Box>
             <Box width="5%" display="flex" alignItems="center">
               <KeyboardArrowRightIcon />

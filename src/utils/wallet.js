@@ -1,7 +1,7 @@
 import { eddsa, babyJub, poseidon } from "circomlib";
 const base64url = require("base64url");
 import { Scalar, utils } from "ffjavascript";
-import { ethers, BigNumber } from "ethers";
+import { ethers, BigNumber, Wallet } from "ethers";
 import { fix2Float } from "./float40";
 import { tokenMap } from "./constant";
 import ERC20ABI from "../common/abis/erc20.json";
@@ -47,7 +47,8 @@ const MockData = {
 export function test() {
   // console.log(Scalar);
   const amount = ethers.utils.parseUnits("100", 18).toString();
-  const prv = "0000000000000000000000000000000000000000000000000000000000000001";
+  const prv =
+    "0000000000000000000000000000000000000000000000000000000000000001";
   const privateKey = Buffer(prv, "hex");
   const account = getAccount(privateKey, "1231212312");
   const tx = {
@@ -74,7 +75,9 @@ export function getAccount(privateKey, ethAddr) {
 
   const compressedPublicKey = utils.leBuff2int(babyJub.packPoint(publicKey));
   const publicKeyCompressed = compressedPublicKey.toString();
-  const publicKeyCompressedHex = ethers.utils.hexZeroPad(`0x${compressedPublicKey.toString(16)}`, 32).slice(2);
+  const publicKeyCompressedHex = ethers.utils
+    .hexZeroPad(`0x${compressedPublicKey.toString(16)}`, 32)
+    .slice(2);
   //   const publicKeyBase64 = hexToBase64BJJ(publicKeyCompressedHex);
 
   return {
@@ -136,7 +139,7 @@ function buildTransactionHashMessage(encodedTransaction) {
 }
 
 export function signTransaction(transaction, encodedTransaction, prv) {
-  console.log(ethers.utils.hexlify(prv))
+  console.log(ethers.utils.hexlify(prv));
   const hashMessage = buildTransactionHashMessage(encodedTransaction);
   // console.log(`hashMessage: ${hashMessage}`);
   const signature = eddsa.signPoseidon(prv, hashMessage);
@@ -150,10 +153,16 @@ export function signTransaction(transaction, encodedTransaction, prv) {
 
 // Compress Amount
 function isHermezCompressedAmount(instance) {
-  return instance.type === HERMEZ_COMPRESSES_AMOUNT_TYPE && instance instanceof HermezCompressedAmount;
+  return (
+    instance.type === HERMEZ_COMPRESSES_AMOUNT_TYPE &&
+    instance instanceof HermezCompressedAmount
+  );
 }
 
-export function generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, ethereum) {
+export function generatePublicAndPrivateKeyStringFromMnemonic(
+  mnemonic,
+  ethereum
+) {
   const hdkey = HDKey.fromMasterSeed(mnemonic);
   const privateKey = hdkey.privateKey;
   const eddsaAccount = getAccount(privateKey, ethereum);
@@ -164,7 +173,11 @@ export async function getERC20Balance(userAddress, tokens) {
   const provider = rpcProviders.arbitrum;
   let balances = {};
   for (let i = 0; i < tokens.length; i++) {
-    const erc20 = new ethers.Contract(tokenMap[tokens[i]].address, ERC20ABI, provider);
+    const erc20 = new ethers.Contract(
+      tokenMap[tokens[i]].address,
+      ERC20ABI,
+      provider
+    );
     const balance = await erc20.balanceOf(userAddress);
     balances[tokens[i]] = {
       token: tokens[i],
@@ -184,9 +197,16 @@ export async function getOnChainData(userAddress, tokens) {
   }
   const provider = rpcProviders.arbitrum;
   for (let i = 0; i < tokens.length; i++) {
-    const erc20 = new ethers.Contract(tokenMap[tokens[i]].address, ERC20ABI, provider);
+    const erc20 = new ethers.Contract(
+      tokenMap[tokens[i]].address,
+      ERC20ABI,
+      provider
+    );
     const balance = await erc20.balanceOf(userAddress);
-    const allowed = await erc20.allowance(userAddress, addresses.arbitrum.zkpaymentAddress);
+    const allowed = await erc20.allowance(
+      userAddress,
+      addresses.arbitrum.zkpaymentAddress
+    );
     let isApprove = false;
     if (BigNumber.from(allowed).gt(0)) {
       isApprove = true;
@@ -198,8 +218,56 @@ export async function getOnChainData(userAddress, tokens) {
     //   decimals: tokenMap[tokens[i]].decimals,
     //   isApprove: isApprove,
     // };
-    (onchainData[tokens[i]].balance = balance), (onchainData[tokens[i]].isApprove = isApprove);
+    (onchainData[tokens[i]].balance = balance),
+      (onchainData[tokens[i]].isApprove = isApprove);
   }
   return onchainData;
 }
 
+export function generateEddsaFromMnemonic(mnemonic) {
+  let eddsaAccounts = [];
+  // const hdkey = HDKey.fromMasterSeed(mnemonic);
+  // const privateKey = hdkey.privateKey;
+  const prvs = createPrivateKey(mnemonic);
+  for (let i = 0; i < prvs.length; i++) {
+    eddsaAccounts.push(getZkAccount(prvs[i]));
+  }
+  return eddsaAccounts;
+}
+export function createPrivateKey(mnemonic) {
+  const amount = 2;
+  const path = "m/44'/60'/0'/0/";
+  let prv = [];
+  for (let i = 0; i < amount; i++) {
+    const tmp = Wallet.fromMnemonic(mnemonic, path + i.toString());
+    prv.push(Buffer.from(tmp.privateKey.slice(2, 66), "hex"));
+  }
+  return prv;
+}
+
+export function getZkAccount(privateKey) {
+  if (privateKey.length !== 32) {
+    throw new Error("Private key buffer must be 32 bytes");
+  }
+
+  const prvString = "0x" + privateKey.toString("hex");
+  const publicKey = eddsa.prv2pub(privateKey);
+  //   privateKey = privateKey;
+  const publicKeyStr = [publicKey[0].toString(), publicKey[1].toString()];
+  const publicKeyHex = [publicKey[0].toString(16), publicKey[1].toString(16)];
+
+  const compressedPublicKey = utils.leBuff2int(babyJub.packPoint(publicKey));
+  const publicKeyCompressed = compressedPublicKey.toString();
+  const publicKeyCompressedHex = ethers.utils
+    .hexZeroPad(`0x${compressedPublicKey.toString(16)}`, 32)
+    .slice(2);
+  //   const publicKeyBase64 = hexToBase64BJJ(publicKeyCompressedHex);
+
+  const zkEthAddr = new Wallet(prvString).address;
+  return {
+    privateKey,
+    publicKeyCompressed,
+    publicKeyCompressedHex,
+    zkEthAddr,
+  };
+}

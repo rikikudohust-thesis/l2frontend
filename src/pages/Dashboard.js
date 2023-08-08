@@ -6,7 +6,7 @@ import CreateDepositModal from "../components/modal/CreateDepositModel";
 import CreateWithdrawModal from "../components/modal/CreateWithdrawModel";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MetamaskContext } from "src/Router";
+import { MetamaskContext, EddsaAccountContext } from "src/Router";
 import { getOnChainData } from "src/utils/wallet";
 import { url } from "src/common/globalCfg";
 import axios from "axios";
@@ -16,9 +16,11 @@ function Dashboard() {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(0);
   const { metamask } = useContext(MetamaskContext);
+  const { eddsaAccount } = useContext(EddsaAccountContext);
   const [balanceData, setBalanceData] = useState({});
   const [zkAccount, setZkAccount] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingBE, setIsLoadingBE] = useState(false);
 
   const handleNewTx = () => {
     setOpenModal(2);
@@ -70,9 +72,8 @@ function Dashboard() {
         setIsLoading(false);
         navigate("/getting-started");
       } else {
-        balances = await getOnChainData(metamask.ethAddr, tokens);
         await axios
-          .get(`${url}/v1/zkPayment/accounts?ethAddr=${metamask.ethAddr}`)
+          .get(`${url}/v1/zkPayment/accounts?ethAddr=${eddsaAccount.zkEthAddr}`)
           .then((res) => {
             const data = res.data.data;
             if (data.length == 0) {
@@ -101,9 +102,25 @@ function Dashboard() {
             console.log(e);
           });
       }
+      setIsLoading(false);
+    }
+    getAccountInfo();
+  }, [eddsaAccount]);
+
+  useEffect(() => {
+    async function getAccountInfo() {
+      setIsLoadingBE(true);
+      let balances;
+      if (metamask == null) {
+        // balances = await getOnChainData(null, tokens);
+        setIsLoadingBE(false);
+        navigate("/getting-started");
+      } else {
+        balances = await getOnChainData(metamask, tokens);
+      }
 
       setBalanceData(balances);
-      setIsLoading(false);
+      setIsLoadingBE(false);
     }
     getAccountInfo();
   }, [balanceData, metamask]);
@@ -200,9 +217,11 @@ function Dashboard() {
           {zkAccount.map((item) => (
             <Account
               nameTag={item.nameTag}
-              owner={metamask ? metamask.ethAddr : "undefined"}
+              owner={eddsaAccount ? eddsaAccount.zkEthAddr : "undefined"}
               address={
-                metamask ? "0x" + metamask.publicKeyCompressedHex : "undefined"
+                eddsaAccount
+                  ? "0x" + eddsaAccount.publicKeyCompressedHex
+                  : "undefined"
               }
               balance={item.balance}
             />

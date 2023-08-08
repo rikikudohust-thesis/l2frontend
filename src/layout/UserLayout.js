@@ -4,7 +4,12 @@ import LocalGasStationRoundedIcon from "@mui/icons-material/LocalGasStationRound
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useState, useContext, useEffect } from "react";
 import * as React from "react";
-import { AccountContext, MetamaskContext } from "src/Router";
+import {
+  AccountContext,
+  MetamaskContext,
+  EddsaContext,
+  EddsaAccountContext,
+} from "src/Router";
 import { generatePublicAndPrivateKeyStringFromMnemonic } from "src/utils/wallet";
 
 import { useNavigate } from "react-router-dom";
@@ -17,6 +22,8 @@ function UserLayout({ childComponent }) {
   const [btnName, setBtnName] = useState("CONNECT");
   const { metamask, setMetamask } = useContext(MetamaskContext);
   const { mnemonic } = useContext(AccountContext);
+  const { eddsa } = useContext(EddsaContext);
+  const { eddsaAccount, setEddsaAccount } = useContext(EddsaAccountContext);
 
   // const [account, setaccount] = useState('0x0');
   useEffect(() => {
@@ -25,16 +32,20 @@ function UserLayout({ childComponent }) {
       return;
     }
     const accountWasChanged = (accounts) => {
-      const account = generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, accounts[0]);
-      setMetamask(account);
-      setBtnName(account.ethAddr)
-      console.log("accountWasChanged");
+      // const account = generatepublicandprivatekeystringfrommnemonic(
+      //   mnemonic,
+      //   accounts[0]
+      // );
+      setMetamask(accounts[0]);
+      setBtnName(accounts[0]);
     };
     const getAndSetAccount = async () => {
-      const changedAccounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-      const account = generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, changedAccounts[0]);
+      const changedAccounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const account = changedAccounts[0];
       setMetamask(account);
-      setBtnName(account.ethAddr)
+      setBtnName(account);
       console.log("getAndSetAccount");
     };
     const clearAccount = () => {
@@ -61,7 +72,6 @@ function UserLayout({ childComponent }) {
       window.ethereum.removeListener("disconnect", clearAccount);
     };
   }, []);
-
   // useEffect(() => {
   //   window.ethereum.on("accountsChanged", handleAccountsList);
   // }, []);
@@ -85,11 +95,16 @@ function UserLayout({ childComponent }) {
 
   async function handleConnectWallet() {
     if (window.ethereum) {
-      const res = await window.ethereum.request({ method: "eth_requestAccounts" });
+      const res = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
 
-      const account = generatePublicAndPrivateKeyStringFromMnemonic(mnemonic, res[0]);
-      setMetamask(account);
-      setBtnName(account.ethAddr);
+      // const account = generatePublicAndPrivateKeyStringFromMnemonic(
+      //   mnemonic,
+      //   res[0]
+      // );
+      setMetamask(res[0]);
+      setBtnName(res[0]);
       navigate("/dashboard");
     }
   }
@@ -135,7 +150,7 @@ function UserLayout({ childComponent }) {
             }}
             onClick={handleToggle}
           >
-            {network}
+            {truncateString("0x" + eddsaAccount.publicKeyCompressedHex, 15)}
             <ArrowDropDownIcon />
           </Button>
           <Popover
@@ -168,11 +183,14 @@ function UserLayout({ childComponent }) {
               }}
             >
               <MenuList>
-                {networks.map(
+                {eddsa.map(
                   (item) =>
                     item !== network && (
-                      <MenuItem sx={{ fontFamily: "inherit", fontSize: "15px" }} onClick={() => setNetwork(item)}>
-                        {item}
+                      <MenuItem
+                        sx={{ fontFamily: "inherit", fontSize: "15px" }}
+                        onClick={() => setEddsaAccount(item)}
+                      >
+                        {truncateString("0x" + item.publicKeyCompressedHex, 15)}
                       </MenuItem>
                     )
                 )}
@@ -200,7 +218,12 @@ function UserLayout({ childComponent }) {
         </Box>
       </Box>
 
-      <Box p={4} borderRadius="15px" bgcolor="#dda15e" sx={{ marginTop: "100px" }}>
+      <Box
+        p={4}
+        borderRadius="15px"
+        bgcolor="#dda15e"
+        sx={{ marginTop: "100px" }}
+      >
         {childComponent}
       </Box>
     </Box>

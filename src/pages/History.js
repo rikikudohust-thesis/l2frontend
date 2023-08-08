@@ -16,7 +16,7 @@ import {
 import { useContext, useEffect, useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { ethers } from "ethers";
-import { MetamaskContext } from "src/Router";
+import { MetamaskContext, EddsaAccountContext } from "src/Router";
 import { stateTx, tokenEnum } from "src/utils/constant";
 import { url } from "src/common/globalCfg";
 
@@ -39,8 +39,10 @@ function History() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [sender, setSender] = useState(addresses[0]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingInterval, setIsLoadingInterval] = useState(false);
   const [ethPrice, setETHPrice] = useState(0);
   const { metamask } = useContext(MetamaskContext);
+  const { eddsaAccount } = useContext(EddsaAccountContext);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -48,19 +50,55 @@ function History() {
     setAnchorEl(null);
   };
 
+  const fetchData = async () => {
+    setIsLoadingInterval(true);
+    let txes;
+    if (!eddsaAccount) {
+      setIsLoadingInterval(false);
+      return;
+    }
+    setSender(eddsaAccount.zkEthAddr);
+    try {
+      await axios
+        .get(
+          `${url}/v1/zkPayment/transactions?fromHezEthereumAddress=${eddsaAccount.zkEthAddr}`
+        )
+        .then((res) => {
+          console.log(res.data.data);
+          if (res.data.data != null) {
+            setTransactionInfo(res.data.data);
+          }
+        });
+    } catch (e) {
+      console.log(e);
+    }
+    setIsLoadingInterval(false);
+  };
+
+  useEffect(() => {
+    // Fetch data initially when component mounts
+    fetchData();
+
+    // Fetch data at intervals using setInterval
+    const intervalId = setInterval(fetchData, 10000); // Fetch every 5 seconds
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, []);
+
   useEffect(() => {
     async function getAccountInfo() {
       setIsLoading(true);
       let txes;
-      if (!metamask) {
+      if (!eddsaAccount) {
         setIsLoading(false);
         return;
       }
-      setSender(metamask.ethAddr);
+      setSender(eddsaAccount.zkEthAddr);
       try {
         await axios
           .get(
-            `${url}/v1/zkPayment/transactions?fromHezEthereumAddress=${metamask.ethAddr}`
+            `${url}/v1/zkPayment/transactions?fromHezEthereumAddress=${eddsaAccount.zkEthAddr}`
           )
           .then((res) => {
             console.log(res.data.data);
@@ -75,7 +113,7 @@ function History() {
       setIsLoading(false);
     }
     getAccountInfo();
-  }, [sender]);
+  }, [eddsaAccount]);
   const mockTxInfo = [
     {
       txHash:
