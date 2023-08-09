@@ -42,7 +42,7 @@ function History() {
   const [isLoadingInterval, setIsLoadingInterval] = useState(false);
   const [ethPrice, setETHPrice] = useState(0);
   const { metamask } = useContext(MetamaskContext);
-  const { eddsaAccount } = useContext(EddsaAccountContext);
+  const { eddsaAccount, setEddsaAccount } = useContext(EddsaAccountContext);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -51,12 +51,14 @@ function History() {
   };
 
   const fetchData = async () => {
+    console.log(eddsaAccount)
     setIsLoadingInterval(true);
     let txes;
     if (!eddsaAccount) {
       setIsLoadingInterval(false);
       return;
     }
+    console.log(eddsaAccount)
     setSender(eddsaAccount.zkEthAddr);
     try {
       await axios
@@ -64,7 +66,6 @@ function History() {
           `${url}/v1/zkPayment/transactions?fromHezEthereumAddress=${eddsaAccount.zkEthAddr}`
         )
         .then((res) => {
-          console.log(res.data.data);
           if (res.data.data != null) {
             setTransactionInfo(res.data.data);
           }
@@ -76,6 +77,7 @@ function History() {
   };
 
   useEffect(() => {
+    console.log("eddsa: ", eddsaAccount)
     // Fetch data initially when component mounts
     fetchData();
 
@@ -84,12 +86,11 @@ function History() {
 
     // Clean up the interval when the component unmounts
     return () => clearInterval(intervalId);
-  }, []);
+  }, [eddsaAccount]);
 
   useEffect(() => {
     async function getAccountInfo() {
       setIsLoading(true);
-      let txes;
       if (!eddsaAccount) {
         setIsLoading(false);
         return;

@@ -12,6 +12,7 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useContext, useState } from "react";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { useNavigate } from "react-router-dom";
 import {
   AccountContext,
   MetamaskContext,
@@ -26,7 +27,7 @@ import ERC20ABI from "../../common/abis/erc20.json";
 import { addresses, rpcProviders } from "src/common/globalCfg";
 import { ethers } from "ethers";
 import { fix2Float } from "src/utils/float40";
-import { signCreateAccountAuthorization, signWithdraw } from "src/utils/permit";
+import { signCreateAccountAuthorization, signTx } from "src/utils/permit";
 
 function BNToNumber(value, decimals) {
   return ethers.utils.formatUnits(value, decimals);
@@ -93,11 +94,13 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
   const [isLoading, setIsLoading] = useState(false);
   const [receiver, setReceiver] = useState("");
   const [amount, setAmount] = useState(0);
+  const navigate = useNavigate();
 
   const { metamask } = useContext(MetamaskContext);
   const { eddsaAccount } = useContext(EddsaAccountContext);
 
   async function handleDeposit() {
+
     const arbitrumProvider = rpcProviders.arbitrum;
     const zkpayment = new ethers.Contract(
       addresses.arbitrum.zkpaymentAddress,
@@ -108,15 +111,16 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
       eddsaAccount.privateKey,
       arbitrumProvider
     );
-    const signature = await signCreateAccountAuthorization(
+    const signature = await signTx(
       signers,
-      "0x" + eddsaAccount.publicKeyCompressedHex,
+      toIdx0,
+      metamask,
       zkpayment.address
     );
 
     const txData = await zkpayment.populateTransaction
       .addL1Transaction(
-        "0x" + eddsaAccount.publicKeyCompressedHex,
+        babyjub0,
         zkAccount.balance[token].idx,
         fix2Float(ethers.utils.parseUnits(amount, tokenMap[token].decimals)),
         amountF0,
@@ -236,6 +240,7 @@ function CreateDepositModal({ handleClose, balanceData, zkAccount }) {
         await handleDeposit();
       }
       setIsLoading(false);
+      navigate("/history");
     }
   }
 
