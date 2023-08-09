@@ -20,6 +20,7 @@ import { fix2Float } from "src/utils/float40";
 import { tokenMap } from "src/utils/constant";
 import { MetamaskContext, EddsaAccountContext } from "src/Router";
 import { signTx } from "src/utils/permit";
+import { useNavigate } from "react-router-dom";
 
 const mockData = [
   {
@@ -82,6 +83,7 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
   const [receiver, setReceiver] = useState("");
   const [amount, setAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const { metamask } = useContext(MetamaskContext);
   const { eddsaAccount } = useContext(EddsaAccountContext);
@@ -102,13 +104,8 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
       eddsaAccount.privateKey,
       arbitrumProvider
     );
-    const signature = await signTx(
-      signers,
-      1,
-      metamask,
-      zkpayment.address
-    );
-    console.log("here")
+    const signature = await signTx(signers, 1, metamask, zkpayment.address);
+    console.log("here");
 
     const txData = await zkpayment.populateTransaction
       .addL1Transaction(
@@ -139,6 +136,7 @@ function CreateWithdrawModal({ zkAccount, handleClose }) {
       .catch((err) => console.log(err));
 
     setIsLoading(false);
+    navigate("/history");
   }
 
   return (

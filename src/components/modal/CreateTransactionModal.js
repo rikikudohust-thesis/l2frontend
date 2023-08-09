@@ -16,7 +16,8 @@ import { ethers } from "ethers";
 import { tokenMap } from "src/utils/constant";
 import { signTransaction } from "src/utils/wallet";
 import axios from "axios";
-import { MetamaskContext , EddsaAccountContext} from "src/Router";
+import { MetamaskContext, EddsaAccountContext } from "src/Router";
+import { useNavigate } from "react-router-dom";
 import { url } from "src/common/globalCfg";
 
 const mockData = [
@@ -75,6 +76,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
   const [amount, setAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const { eddsaAccount } = useContext(EddsaAccountContext);
+  const navigate = useNavigate();
 
   const { metamask } = useContext(MetamaskContext);
 
@@ -86,14 +88,16 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
     setIsLoading(true);
     let toAccount;
     await axios
-      .get(`${url}/v1/zkPayment/accountsEth?ethAddr=${receiver}&tokenID=${tokenMap[token].id}`)
+      .get(
+        `${url}/v1/zkPayment/accountsEth?ethAddr=${receiver}&tokenID=${tokenMap[token].id}`
+      )
       .then((res) => {
         toAccount = res.data.data;
       })
       .catch((e) => {
         console.log(e);
       });
-    console.log(toAccount)
+    console.log(toAccount);
     if (toAccount.length == 0) {
       setIsLoading(false);
       return;
@@ -127,6 +131,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
         console.log(e);
       });
     setIsLoading(false);
+    navigate("/history");
   }
 
   return (
@@ -145,7 +150,7 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
         alignItems: "center",
       }}
     >
-      <Box  
+      <Box
         sx={{
           display: "flex",
           justifyContent: "flex-end",
@@ -158,7 +163,11 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
           <CancelIcon sx={{ color: "#000" }} />
         </IconButton>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", paddingTop: "20px" }}>New Transaction</Box>
+      <Box
+        sx={{ display: "flex", justifyContent: "center", paddingTop: "20px" }}
+      >
+        New Transaction
+      </Box>
       <Box
         sx={{
           display: "flex",
@@ -233,7 +242,11 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
                         }}
                         onClick={() => setSender(item.address)}
                       >
-                        <Box display="flex" justifyContent="flex-start" width="100%">
+                        <Box
+                          display="flex"
+                          justifyContent="flex-start"
+                          width="100%"
+                        >
                           {item.address}
                         </Box>
                       </MenuItem>
@@ -341,7 +354,10 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
                   {tokens.map(
                     (item) =>
                       item.name !== token && (
-                        <MenuItem sx={{ fontFamily: "Lexend Exa" }} onClick={() => setToken(item.name)}>
+                        <MenuItem
+                          sx={{ fontFamily: "Lexend Exa" }}
+                          onClick={() => setToken(item.name)}
+                        >
                           {item.name}
                         </MenuItem>
                       )
@@ -352,7 +368,11 @@ function CreateTransactionModal({ handleClose, zkAccount }) {
           </Box>
         </Box>
         <Box sx={{ width: "70%", display: "flex", flexDirection: "column" }}>
-          <Box display="flex" justifyContent="space-between" sx={{ fontWeight: "600" }}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            sx={{ fontWeight: "600" }}
+          >
             <Box>Amount</Box>
             <Box>
               Your balance : {getBalance()} {token}
