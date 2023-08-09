@@ -1,7 +1,7 @@
 import { providers } from "ethers";
 
 // export const url = "http://34.87.26.249:8080"
-export const url = "http://127.0.0.1:8080"
+export const url = "http://34.87.26.249:8080"
 export const addresses = {
   sepolia: {
     zkpaymentAddress: "0x85f30D7589c56e0056284E190CB5a9BABbB2419e",
